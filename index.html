@@ -731,6 +731,19 @@
             "ROSA CHUMBES": "Personal de Archivo"
         };
 
+
+const dataMaestra = {
+    personal: [
+        "ALFREDO CRUZADO", "RAÚL RODRIGUEZ", "JORGE DESPOSORIO", 
+        "JORGE IZQUIERDO", "LUIS EPIFANÍA", "MANUEL BARANDIARAN", 
+        "ROBERTO DÁVILA", "TEÓFILO GABINO", "IVÁN ROCHA"
+    ],
+    repositorios: [
+        "SÓTANO NCPP", "SAENZ PEÑA", "PADILLA", "DUNAS", "DOMUS"
+    ]
+};
+
+
         // Matrices de almacenamiento dinámico en memoria
         let baseDatosInventario = []; 
         let listaRangosCenso = [];    
@@ -758,6 +771,31 @@
                 }
             });
         }
+
+
+
+function inicializarSelectsReingresos() {
+    const sSolicitante = document.getElementById('re-solicitante');
+    const sEntregado = document.getElementById('re-entregado');
+    const sLocal = document.getElementById('re-local');
+
+    // Limpiar previos
+    sSolicitante.innerHTML = sEntregado.innerHTML = sLocal.innerHTML = '<option value="">Seleccione...</option>';
+
+    // Cargar Personal
+    dataMaestra.personal.forEach(p => {
+        sSolicitante.innerHTML += `<option value="${p}">${p}</option>`;
+        sEntregado.innerHTML += `<option value="${p}">${p}</option>`;
+    });
+
+    // Cargar Repositorios
+    dataMaestra.repositorios.forEach(r => {
+        sLocal.innerHTML += `<option value="${r}">${r}</option>`;
+    });
+}
+
+
+
 
         function switchView(viewId, titleText = "Dashboard Principal") {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
