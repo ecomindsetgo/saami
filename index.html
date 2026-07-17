@@ -255,11 +255,36 @@
 
 
 <section id="view-consultas-reingresos" class="view-section">
-<div class="row mb-3">
-    <div class="col-md-6">
-        <input type="text" id="busqueda-reingresos" class="form-control" 
-               placeholder="🔍 Buscar por solicitante, local o fecha..." 
-               onkeyup="filtrarTablaReingresos()">
+<div class="card p-4 border-0 shadow-sm mb-3">
+    <h6 class="form-section-title"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h6>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label small">Solicitante</label>
+            <select class="form-select form-select-sm" id="filtro-re-solicitante" onchange="filtrarHistorialReingresos()">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small">Entregado por</label>
+            <select class="form-select form-select-sm" id="filtro-re-entregado" onchange="filtrarHistorialReingresos()">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small">Fecha</label>
+            <input type="date" class="form-control form-control-sm" id="filtro-re-fecha" onchange="filtrarHistorialReingresos()">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small">Búsqueda libre</label>
+            <input type="text" id="busqueda-reingresos" class="form-control form-control-sm"
+                   placeholder="🔍 Local, paquete, expediente..."
+                   onkeyup="filtrarHistorialReingresos()">
+        </div>
+    </div>
+    <div class="text-end mt-2">
+        <button class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('filtro-re-solicitante').value='';document.getElementById('filtro-re-entregado').value='';document.getElementById('filtro-re-fecha').value='';document.getElementById('busqueda-reingresos').value='';filtrarHistorialReingresos()">
+            <i class="bi bi-x-circle"></i> Limpiar filtros
+        </button>
     </div>
 </div>
     <div class="card p-4 border-0 shadow-sm">
@@ -278,6 +303,7 @@
                         <th>Fecha</th>
                         <th>Solicitante</th>
                         <th>Local</th>
+                        <th>Entregado por</th>
                         <th>Cantidad</th>
                         <th>Acción</th>
                     </tr>
@@ -730,6 +756,7 @@ const dataMaestra = {
         let baseDatosInventario = []; 
         let listaRangosCenso = [];    
         let listaFaltantesModal = []; 
+        let baseDatosReingresos = [];
         let modalInstance = null;
 
         function cargarDataMaestra(usuarioActivoNombre = "") {
@@ -760,14 +787,20 @@ function inicializarSelectsReingresos() {
     const sSolicitante = document.getElementById('re-solicitante');
     const sEntregado = document.getElementById('re-entregado');
     const sLocal = document.getElementById('re-local');
+    const fSolicitante = document.getElementById('filtro-re-solicitante');
+    const fEntregado = document.getElementById('filtro-re-entregado');
 
     // Limpiar previos
     sSolicitante.innerHTML = sEntregado.innerHTML = sLocal.innerHTML = '<option value="">Seleccione...</option>';
+    if (fSolicitante) fSolicitante.innerHTML = '<option value="">Todos</option>';
+    if (fEntregado) fEntregado.innerHTML = '<option value="">Todos</option>';
 
     // Cargar Personal
     dataMaestra.personal.forEach(p => {
         sSolicitante.innerHTML += `<option value="${p}">${p}</option>`;
         sEntregado.innerHTML += `<option value="${p}">${p}</option>`;
+        if (fSolicitante) fSolicitante.innerHTML += `<option value="${p}">${p}</option>`;
+        if (fEntregado) fEntregado.innerHTML += `<option value="${p}">${p}</option>`;
     });
 
     // Cargar Repositorios
@@ -775,6 +808,24 @@ function inicializarSelectsReingresos() {
         sLocal.innerHTML += `<option value="${r}">${r}</option>`;
     });
 }
+
+// Limpia por completo la ficha de Reingresos: encabezado y tabla de expedientes.
+// Se llama al cambiar de usuario (para que no queden datos del usuario anterior)
+// y después de guardar un registro con éxito (para no repetir la carga anterior).
+function resetFormularioReingreso() {
+    const fFecha = document.getElementById('re-fecha');
+    const fSolicitante = document.getElementById('re-solicitante');
+    const fLocal = document.getElementById('re-local');
+    const fEntregado = document.getElementById('re-entregado');
+    const tbody = document.querySelector('#tabla-reingresos tbody');
+
+    if (fFecha) fFecha.valueAsDate = new Date();
+    if (fSolicitante) fSolicitante.value = '';
+    if (fLocal) fLocal.value = '';
+    if (fEntregado) fEntregado.value = '';
+    if (tbody) tbody.innerHTML = '';
+}
+
 
 
 
@@ -812,9 +863,17 @@ function inicializarSelectsReingresos() {
         const userTitle = user.displayName ? user.displayName.toUpperCase() : user.email.split('@')[0].toUpperCase();
         document.getElementById('user-display-name').innerText = userTitle;
         document.getElementById('inv-registra').value = userTitle;
-        
+
+        // Poblar SIEMPRE los datos de perfil con los del usuario que acaba de iniciar sesión
+        // (antes quedaban vacíos o con los datos del usuario anterior).
+        document.getElementById('perf-email').value = user.email || '';
+        document.getElementById('perf-nombre').value = user.displayName || '';
+        const formClave = document.getElementById('form-perfil-clave');
+        if (formClave) formClave.reset();
+
         cargarDataMaestra(userTitle);
         inicializarSelectsReingresos(); // Asegúrate de llamar esto
+        resetFormularioReingreso(); // Limpia cualquier dato de reingreso dejado por la sesión anterior
         
         // Carga de inventarios
         await cargarInventariosDesdeCloud().catch(err => console.error("Error al cargar inventarios:", err));
@@ -1263,20 +1322,35 @@ function inicializarSelectsReingresos() {
 
         // === Módulo de Reingresos (usa Firestore v9, igual que el resto de la app) ===
         window.guardarReingreso = async function() {
-            const datos = {
-                fecha: document.getElementById('re-fecha').value,
-                solicitante: document.getElementById('re-solicitante').value,
-                local: document.getElementById('re-local').value,
-                entregado: document.getElementById('re-entregado').value,
-                expedientes: Array.from(document.querySelectorAll("#tabla-reingresos tbody tr")).map(tr => {
-                    const inputs = tr.querySelectorAll('input, select');
-                    return { paquete: inputs[0].value, exp: inputs[1].value, folios: inputs[2].value, juzgado: inputs[3].value, tipo: inputs[4].value, acomp: inputs[5].value };
-                }),
-                createdAt: Date.now()
-            };
+            const expedientes = Array.from(document.querySelectorAll("#tabla-reingresos tbody tr")).map(tr => {
+                const inputs = tr.querySelectorAll('input, select');
+                return { paquete: inputs[0].value, exp: inputs[1].value, folios: inputs[2].value, juzgado: inputs[3].value, tipo: inputs[4].value, acomp: inputs[5].value };
+            });
+
+            if (expedientes.length === 0) {
+                Swal.fire('Atención', 'Agregue al menos un expediente antes de guardar.', 'warning');
+                return;
+            }
+
             try {
+                // Correlativo consecutivo: se calcula y se guarda dentro del propio documento,
+                // así el número queda fijo para siempre (no cambia si luego se borran otros registros).
+                const snapshotActual = await getDocs(collection(db, "reingresos"));
+                const correlativo = snapshotActual.size + 1;
+
+                const datos = {
+                    correlativo,
+                    fecha: document.getElementById('re-fecha').value,
+                    solicitante: document.getElementById('re-solicitante').value,
+                    local: document.getElementById('re-local').value,
+                    entregado: document.getElementById('re-entregado').value,
+                    expedientes,
+                    createdAt: Date.now()
+                };
+
                 await addDoc(collection(db, "reingresos"), datos);
                 Swal.fire({ icon: 'success', title: 'Registro guardado con éxito' });
+                resetFormularioReingreso();
             } catch (e) {
                 Swal.fire('Error', e.message, 'error');
             }
@@ -1285,35 +1359,176 @@ function inicializarSelectsReingresos() {
         window.cargarHistorialReingresos = async function() {
             try {
                 const querySnapshot = await getDocs(collection(db, "reingresos"));
-                const tbody = document.getElementById('tabla-historial-reingresos');
-                tbody.innerHTML = '';
-                const registros = [];
-                querySnapshot.forEach((doc) => registros.push({ id: doc.id, ...doc.data() }));
-                registros.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-                if (registros.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">Sin reingresos registrados.</td></tr>`;
-                    return;
-                }
-                registros.forEach(data => {
-                    const fila = `<tr>
-                        <td>${data.fecha || 'N/A'}</td>
-                        <td>${data.solicitante || 'N/A'}</td>
-                        <td>${data.local || 'N/A'}</td>
-                        <td>${data.expedientes ? data.expedientes.length : 0}</td>
-                        <td>
-                            <button class="btn btn-sm btn-danger py-1 px-2" onclick="alert('Funcionalidad de detalle en desarrollo')">
-                                <i class="bi bi-eye"></i> Ver
-                            </button>
-                        </td>
-                    </tr>`;
-                    tbody.insertAdjacentHTML('beforeend', fila);
-                });
+                baseDatosReingresos = [];
+                querySnapshot.forEach((doc) => baseDatosReingresos.push({ id: doc.id, ...doc.data() }));
+                baseDatosReingresos.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                filtrarHistorialReingresos();
             } catch (error) {
                 console.error("Error al cargar historial de reingresos:", error);
             }
         };
+
+        window.filtrarHistorialReingresos = function() {
+            const fSolicitante = document.getElementById('filtro-re-solicitante')?.value || '';
+            const fEntregado = document.getElementById('filtro-re-entregado')?.value || '';
+            const fFecha = document.getElementById('filtro-re-fecha')?.value || '';
+            const fTexto = (document.getElementById('busqueda-reingresos')?.value || '').toLowerCase().trim();
+
+            const filtrados = baseDatosReingresos.filter(r => {
+                const mSolicitante = fSolicitante === '' || r.solicitante === fSolicitante;
+                const mEntregado = fEntregado === '' || r.entregado === fEntregado;
+                const mFecha = fFecha === '' || r.fecha === fFecha;
+                const mTexto = fTexto === '' || (r.local || '').toLowerCase().includes(fTexto) ||
+                    (r.expedientes || []).some(e => (e.paquete || '').toLowerCase().includes(fTexto) || (e.exp || '').toLowerCase().includes(fTexto));
+                return mSolicitante && mEntregado && mFecha && mTexto;
+            });
+
+            renderTablaHistorialReingresos(filtrados);
+        };
+
+        function renderTablaHistorialReingresos(registros) {
+            const tbody = document.getElementById('tabla-historial-reingresos');
+            tbody.innerHTML = '';
+            if (registros.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Sin reingresos registrados.</td></tr>`;
+                return;
+            }
+            registros.forEach(data => {
+                const fila = `<tr>
+                    <td>${data.fecha || 'N/A'}</td>
+                    <td>${data.solicitante || 'N/A'}</td>
+                    <td>${data.local || 'N/A'}</td>
+                    <td>${data.entregado || 'N/A'}</td>
+                    <td>${data.expedientes ? data.expedientes.length : 0}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger py-1 px-2" onclick="window.generarPDFReingresoDesdeRegistro('${data.id}')">
+                            <i class="bi bi-file-pdf"></i> PDF
+                        </button>
+                    </td>
+                </tr>`;
+                tbody.insertAdjacentHTML('beforeend', fila);
+            });
+        }
+
+        // Construye el reporte PDF con el formato institucional (logo, cabecera de datos,
+        // tabla de expedientes, totales por tipo de archivamiento y firmas).
+        function construirPDFReingreso({ correlativo, fecha, solicitante, local, entregado, expedientes }) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            // Logo institucional (emblema circular)
+            doc.setFillColor(128, 0, 0);
+            doc.circle(27, 20, 8, 'F');
+            doc.setFont("Inter", "bold"); doc.setFontSize(9); doc.setTextColor(255, 255, 255);
+            doc.text("JD", 27, 22, { align: "center" });
+            doc.setFont("Inter", "normal"); doc.setFontSize(6); doc.setTextColor(90, 90, 90);
+            doc.text("ARCHIVO", 27, 31, { align: "center" });
+            doc.text("DESCONCENTRADO", 27, 34.5, { align: "center" });
+
+            // Título
+            doc.setFont("Inter", "bold"); doc.setFontSize(14); doc.setTextColor(20, 20, 20);
+            doc.text("REPORTE DE EXPEDIENTES REINGRESADOS", pageWidth / 2 + 8, 20, { align: "center" });
+
+            doc.setDrawColor(128, 0, 0); doc.setLineWidth(0.4);
+            doc.line(15, 40, pageWidth - 15, 40);
+
+            // Datos de cabecera
+            doc.setFont("Inter", "bold"); doc.setFontSize(9); doc.setTextColor(0, 0, 0);
+            doc.text(`Correlativo (ID): ${correlativo}`, 15, 47);
+            doc.text(`Fecha: ${fecha}`, pageWidth - 15, 47, { align: "right" });
+            doc.text(`Solicitante: ${solicitante}`, 15, 52);
+            doc.text(`Local de Reingreso: ${local}`, pageWidth - 15, 52, { align: "right" });
+            doc.text(`Entregado por: ${entregado}`, 15, 57);
+
+            // Tabla de expedientes
+            const filasTabla = expedientes.map((e, idx) => [
+                (idx + 1).toString(), e.paquete, e.exp, e.folios, e.juzgado, e.tipo, e.acomp, local
+            ]);
+
+            doc.autoTable({
+                startY: 63,
+                margin: { left: 15, right: 15 },
+                theme: 'grid',
+                head: [['N°', 'N° Paquete', 'N° Expediente', 'Folios', 'Juzgado', 'Tipo', 'Acompañados', 'Repositorio']],
+                body: filasTabla,
+                headStyles: { fillColor: [128, 0, 0], textColor: [255, 255, 255], fontSize: 8, halign: 'center' },
+                styles: { fontSize: 7.5, font: 'Inter', halign: 'center', cellPadding: 1.5 },
+                columnStyles: { 1: { halign: 'center' }, 2: { halign: 'center' } }
+            });
+
+            // Totales
+            const totalAT = expedientes.filter(e => e.tipo === 'Transitorio').length;
+            const totalAD = expedientes.filter(e => e.tipo === 'Definitivo').length;
+            const totalAcompanados = expedientes.reduce((sum, e) => sum + (parseInt(e.acomp, 10) || 0), 0);
+
+            let y = doc.lastAutoTable.finalY + 8;
+            doc.setFont("Inter", "bold"); doc.setFontSize(8.5); doc.setTextColor(0, 0, 0);
+            doc.text(`Total AT (Archivamiento Transitorio): ${totalAT}`, 15, y);
+            doc.text(`Total AD (Archivamiento Definitivo): ${totalAD}`, 100, y);
+            y += 5;
+            doc.text(`Total Expedientes: ${expedientes.length}`, 15, y);
+            y += 5;
+            doc.text(`Total Acompañados: ${totalAcompanados}`, 15, y);
+
+            // Firmas
+            y += 20;
+            doc.setLineWidth(0.3); doc.setDrawColor(100, 100, 100);
+            doc.line(25, y, 85, y);
+            doc.line(pageWidth - 85, y, pageWidth - 25, y);
+            doc.setFont("Inter", "normal"); doc.setFontSize(8);
+            doc.text(`Entregado por: ${entregado}`, 55, y + 5, { align: "center" });
+            doc.text(`Recibido por: ${solicitante}`, pageWidth - 55, y + 5, { align: "center" });
+
+            // Pie de página institucional
+            const pageHeight = doc.internal.pageSize.getHeight();
+            doc.setFont("Inter", "normal"); doc.setFontSize(7); doc.setTextColor(140, 140, 140);
+            doc.text(`Sistema de Registro y Control de Reingresos - v1.0 | © ${new Date().getFullYear()} Alfredo Raul Cruzado Palacios`, pageWidth / 2, pageHeight - 15, { align: "center" });
+            doc.text("Uso exclusivo para el Archivo Desconcentrado de la CSJ Santa.", pageWidth / 2, pageHeight - 11, { align: "center" });
+
+            const correlativoStr = String(correlativo).padStart(3, '0');
+            const fechaStr = (fecha || '').replace(/-/g, '');
+            doc.save(`REINGRESOS_${correlativoStr}_${fechaStr}.pdf`);
+        }
+
+        // Genera el PDF a partir de la ficha que se está llenando en pantalla (aún no guardada).
+        window.generarReporteReingresoPDF = async function() {
+            const expedientes = Array.from(document.querySelectorAll("#tabla-reingresos tbody tr")).map(tr => {
+                const inputs = tr.querySelectorAll('input, select');
+                return { paquete: inputs[0].value, exp: inputs[1].value, folios: inputs[2].value, juzgado: inputs[3].value, tipo: inputs[4].value, acomp: inputs[5].value };
+            });
+
+            if (expedientes.length === 0) {
+                Swal.fire('Atención', 'Agregue al menos un expediente antes de generar el reporte.', 'warning');
+                return;
+            }
+
+            const snapshotActual = await getDocs(collection(db, "reingresos"));
+            construirPDFReingreso({
+                correlativo: snapshotActual.size + 1,
+                fecha: document.getElementById('re-fecha').value,
+                solicitante: document.getElementById('re-solicitante').value,
+                local: document.getElementById('re-local').value,
+                entregado: document.getElementById('re-entregado').value,
+                expedientes
+            });
+        };
+
+        // Regenera el PDF institucional de un registro ya guardado, desde el historial.
+        window.generarPDFReingresoDesdeRegistro = function(id) {
+            const registro = baseDatosReingresos.find(r => r.id === id);
+            if (!registro) return;
+            construirPDFReingreso({
+                correlativo: registro.correlativo ?? '-',
+                fecha: registro.fecha,
+                solicitante: registro.solicitante,
+                local: registro.local,
+                entregado: registro.entregado,
+                expedientes: registro.expedientes || []
+            });
+        };
     </script>
+
 
 
 
@@ -1340,81 +1555,6 @@ function inicializarSelectsReingresos() {
         </td>
     </tr>`;
     tbody.insertAdjacentHTML('beforeend', fila);
-}
-
-
-
-function filtrarTablaReingresos() {
-    // Obtener el valor del buscador y convertirlo a minúsculas
-    const input = document.getElementById('busqueda-reingresos');
-    const filtro = input.value.toLowerCase();
-    const tabla = document.getElementById('tabla-historial-reingresos');
-    const filas = tabla.getElementsByTagName('tr');
-
-    // Recorrer todas las filas de la tabla
-    for (let i = 0; i < filas.length; i++) {
-        const textoFila = filas[i].textContent.toLowerCase();
-        // Mostrar la fila si contiene el texto buscado, sino ocultarla
-        if (textoFila.indexOf(filtro) > -1) {
-            filas[i].style.display = "";
-        } else {
-            filas[i].style.display = "none";
-        }
-    }
-}
-
-
-
-    async function generarReporteReingresoPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-
-    // 1. Estética institucional (Cabeceras)
-    doc.setFont("Inter", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(128, 0, 0); // Color granate institucional
-    doc.text("REPORTE DE REINGRESOS - CSJSA", pageWidth / 2, 20, { align: "center" });
-    
-    doc.setFontSize(9);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Fecha: ${document.getElementById('re-fecha').value}`, 15, 30);
-    doc.text(`Solicitante: ${document.getElementById('re-solicitante').value}`, 15, 35);
-    doc.text(`Local: ${document.getElementById('re-local').value}`, 110, 30);
-    doc.text(`Entregado por: ${document.getElementById('re-entregado').value}`, 110, 35);
-
-    // 2. Extracción de datos de la tabla (7 columnas)
-    const filas = Array.from(document.querySelectorAll("#tabla-reingresos tbody tr"));
-    const datosReporte = filas.map((tr) => {
-        const inputs = tr.querySelectorAll('input, select');
-        return [
-            inputs[0].value, // Paquete
-            inputs[1].value, // Expediente
-            inputs[2].value, // Folios
-            inputs[3].value, // Juzgado
-            inputs[4].value, // Tipo
-            inputs[5].value  // Acomp.
-        ];
-    });
-
-    // 3. Generación de tabla con formato SIPEX
-    doc.autoTable({
-        startY: 45,
-        margin: { left: 15, right: 15 },
-        head: [['Paquete', 'Expediente', 'Folios', 'Juzgado', 'Tipo', 'Acomp.']],
-        body: datosReporte,
-        headStyles: { fillColor: [128, 0, 0], textColor: [255, 255, 255] },
-        styles: { fontSize: 8, font: 'Inter' }
-    });
-
-    // 4. Firmas finales
-    let finalY = doc.lastAutoTable.finalY + 20;
-    doc.line(30, finalY, 80, finalY);
-    doc.text("ENTREGADO POR", 55, finalY + 5, { align: "center" });
-    doc.line(130, finalY, 180, finalY);
-    doc.text("RECIBIDO POR", 155, finalY + 5, { align: "center" });
-
-    doc.save('Reingreso_SIPEX.pdf');
 }
 </script>
 
