@@ -465,7 +465,6 @@
             </section>
 
 
-<!-- 1. AGREGA ESTA SECCIÓN DENTRO DE TU <main id="main-content">, JUNTO A LAS OTRAS <section> -->
 <section id="view-reingresos" class="view-section">
     <div class="card p-4 mb-4">
         <h6 class="form-section-title"><i class="bi bi-person-badge me-2"></i>Datos de Registro</h6>
@@ -497,52 +496,6 @@
         <button class="btn btn-primary px-4 fw-bold" onclick="guardarReingreso()"><i class="bi bi-cloud-upload me-2"></i>Guardar Registro</button>
     </div>
 </section>
-
-<!-- 2. AGREGA ESTE SCRIPT ANTES DEL CIERRE DE </body> -->
-<script>
-    function agregarFilaReingreso() {
-        const tbody = document.querySelector('#tabla-reingresos tbody');
-        tbody.insertAdjacentHTML('beforeend', `<tr>
-            <td><input type="text" class="form-control form-control-sm"></td>
-            <td><input type="text" class="form-control form-control-sm"></td>
-            <td><input type="number" class="form-control form-control-sm"></td>
-            <td><input type="text" class="form-control form-control-sm"></td>
-            <td><select class="form-select form-select-sm"><option>Transitorio</option><option>Definitivo</option></select></td>
-            <td><input type="number" class="form-control form-control-sm"></td>
-            <td><button class="btn btn-outline-danger btn-sm" onclick="this.parentElement.parentElement.remove()"><i class="bi bi-trash"></i></button></td>
-        </tr>`);
-    }
-
-    async function guardarReingreso() {
-        const datos = {
-            fecha: document.getElementById('re-fecha').value,
-            solicitante: document.getElementById('re-solicitante').value,
-            local: document.getElementById('re-local').value,
-            entregado: document.getElementById('re-entregado').value,
-            expedientes: Array.from(document.querySelectorAll("#tabla-reingresos tbody tr")).map(tr => {
-                const inputs = tr.querySelectorAll('input, select');
-                return { paquete: inputs[0].value, exp: inputs[1].value, folios: inputs[2].value, juzgado: inputs[3].value, tipo: inputs[4].value, acomp: inputs[5].value };
-            })
-        };
-        try {
-            await firebase.firestore().collection('reingresos').add({...datos, createdAt: new Date()});
-            alert("Registro guardado con éxito");
-        } catch (e) { alert("Error: " + e.message); }
-    }
-
-    async function generarReporteReingresoPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.text("REGISTRO DE REINGRESOS", 105, 15, { align: "center" });
-        const datos = Array.from(document.querySelectorAll("#tabla-reingresos tbody tr")).map(tr => 
-            Array.from(tr.querySelectorAll('input, select')).map(i => i.value));
-        doc.autoTable({ startY: 25, head: [['Paquete', 'Exp', 'Folios', 'Juzgado', 'Tipo', 'Acomp']], body: datos });
-        doc.save('Reingreso_CSJSA.pdf');
-    }
-</script>
-
-
-
 
             <!-- CONSULTAS -->
             <section id="view-consultas" class="view-section">
@@ -636,21 +589,6 @@
 
 
 
-
-<section id="view-reingresos" class="view-section">
-    <div class="card p-4 border-0 shadow-sm">
-        <h6 class="form-section-title">Registro de Reingresos</h6>
-        <button class="btn btn-dark btn-sm mb-3" onclick="agregarFilaReingreso()">+ Agregar Fila</button>
-        <table class="table" id="tabla-reingresos">
-            <thead><tr><th>Paquete</th><th>Expediente</th><th>Acción</th></tr></thead>
-            <tbody></tbody>
-        </table>
-        <button class="btn btn-danger" onclick="generarReporteReingresoPDF()">Generar PDF</button>
-    </div>
-</section>
-
-
-
         </main>
     </div>
 
@@ -741,14 +679,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-
-// Al final de tu script type="module", añade esto:
-window.cargarHistorialReingresos = cargarHistorialReingresos;
-window.filtrarTablaReingresos = filtrarTablaReingresos;
-window.agregarFilaReingreso = agregarFilaReingreso;
-window.guardarReingreso = guardarReingreso;
-window.generarReporteReingresoPDF = generarReporteReingresoPDF;
 
 
         // ==========================================
@@ -1111,10 +1041,20 @@ function inicializarSelectsReingresos() {
 
         async function cargarInventariosDesdeCloud() {
             try {
-                const q = query(collection(db, "censo_institucional"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
+                // Nota: NO usamos orderBy("createdAt") en la query. Firestore excluye
+                // de los resultados cualquier documento que no tenga ese campo exacto,
+                // así que lotes guardados antes (o sin ese campo) desaparecían de la lista.
+                // Traemos todo y ordenamos en el cliente, con un valor de respaldo.
+                const querySnapshot = await getDocs(collection(db, "censo_institucional"));
                 baseDatosInventario = [];
                 querySnapshot.forEach((doc) => { baseDatosInventario.push({ id: doc.id, ...doc.data() }); });
+
+                baseDatosInventario.sort((a, b) => {
+                    const ta = (a.createdAt && a.createdAt.toMillis) ? a.createdAt.toMillis() : (a.createdAt || 0);
+                    const tb = (b.createdAt && b.createdAt.toMillis) ? b.createdAt.toMillis() : (b.createdAt || 0);
+                    return tb - ta;
+                });
+
                 actualizarDashboardGlobal();
                 filtrarRegistros();
             } catch (error) { console.error(error); }
@@ -1123,9 +1063,9 @@ function inicializarSelectsReingresos() {
         function actualizarDashboardGlobal() {
             let sT = 0, sF = 0, sR = 0;
             baseDatosInventario.forEach(lote => { 
-                sT += lote.totalTeorico; 
-                sF += lote.totalFaltantes; 
-                sR += lote.totalReal; 
+                sT += Number(lote.totalTeorico) || 0; 
+                sF += Number(lote.totalFaltantes) || 0; 
+                sR += Number(lote.totalReal) || 0; 
             });
 
             document.getElementById('dash-total-teorico').innerText = sT;
@@ -1149,7 +1089,7 @@ function inicializarSelectsReingresos() {
             }
             baseDatosInventario.slice(0, 5).forEach(l => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${l.fecha}</td><td class="fw-bold text-dark">${l.repositorio}</td><td class="text-center"><span class="badge bg-secondary">${l.matrizRangos.length} tramos</span></td><td class="text-center">${l.totalTeorico}</td><td class="text-center text-danger">${l.totalFaltantes}</td><td class="text-center fw-bold text-success">${l.totalReal}</td>`;
+                tr.innerHTML = `<td>${l.fecha || 'N/A'}</td><td class="fw-bold text-dark">${l.repositorio || 'N/A'}</td><td class="text-center"><span class="badge bg-secondary">${(l.matrizRangos || []).length} tramos</span></td><td class="text-center">${l.totalTeorico ?? 0}</td><td class="text-center text-danger">${l.totalFaltantes ?? 0}</td><td class="text-center fw-bold text-success">${l.totalReal ?? 0}</td>`;
                 recBody.appendChild(tr);
             });
         }
@@ -1165,7 +1105,7 @@ function inicializarSelectsReingresos() {
             datos.forEach(l => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${l.fecha}</td><td class="fw-semibold text-primary">${l.repositorio}</td><td class="text-center fw-bold">${l.matrizRangos.length}</td><td class="text-center">${l.totalTeorico}</td><td class="text-center text-danger fw-bold">${l.totalFaltantes}</td><td class="text-center table-success fw-bold text-success">${l.totalReal}</td><td class="small">${l.registra}</td>
+                    <td>${l.fecha || 'N/A'}</td><td class="fw-semibold text-primary">${l.repositorio || 'N/A'}</td><td class="text-center fw-bold">${(l.matrizRangos || []).length}</td><td class="text-center">${l.totalTeorico ?? 0}</td><td class="text-center text-danger fw-bold">${l.totalFaltantes ?? 0}</td><td class="text-center table-success fw-bold text-success">${l.totalReal ?? 0}</td><td class="small">${l.registra || 'N/A'}</td>
                     <td class="text-end">
                         <button class="btn btn-sm btn-danger py-1 px-2 me-1" onclick="window.generarPDFInstitucional('${l.id}')"><i class="bi bi-file-pdf"></i> PDF</button>
                         <button class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="window.eliminarRegistroLocal('${l.id}')"><i class="bi bi-trash3"></i></button>
@@ -1180,7 +1120,10 @@ function inicializarSelectsReingresos() {
             const fTexto = document.getElementById('filtro-texto').value.toLowerCase().trim();
             const res = baseDatosInventario.filter(l => {
                 const mR = fRepo === "" || l.repositorio === fRepo;
-                const mT = fTexto === "" || l.registra.toLowerCase().includes(fTexto) || l.repositorio.toLowerCase().includes(fTexto) || l.fecha.includes(fTexto);
+                const mT = fTexto === "" ||
+                    (l.registra || "").toLowerCase().includes(fTexto) ||
+                    (l.repositorio || "").toLowerCase().includes(fTexto) ||
+                    (l.fecha || "").includes(fTexto);
                 return mR && mT;
             });
             renderizarFiltrosConsultas(res);
@@ -1317,68 +1260,61 @@ function inicializarSelectsReingresos() {
         window.abrirModalRango = abrirModalRango;
         window.cerrarModalRango = cerrarModalRango;
         window.filtrarRegistros = filtrarRegistros;
+
+        // === Módulo de Reingresos (usa Firestore v9, igual que el resto de la app) ===
+        window.guardarReingreso = async function() {
+            const datos = {
+                fecha: document.getElementById('re-fecha').value,
+                solicitante: document.getElementById('re-solicitante').value,
+                local: document.getElementById('re-local').value,
+                entregado: document.getElementById('re-entregado').value,
+                expedientes: Array.from(document.querySelectorAll("#tabla-reingresos tbody tr")).map(tr => {
+                    const inputs = tr.querySelectorAll('input, select');
+                    return { paquete: inputs[0].value, exp: inputs[1].value, folios: inputs[2].value, juzgado: inputs[3].value, tipo: inputs[4].value, acomp: inputs[5].value };
+                }),
+                createdAt: Date.now()
+            };
+            try {
+                await addDoc(collection(db, "reingresos"), datos);
+                Swal.fire({ icon: 'success', title: 'Registro guardado con éxito' });
+            } catch (e) {
+                Swal.fire('Error', e.message, 'error');
+            }
+        };
+
+        window.cargarHistorialReingresos = async function() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "reingresos"));
+                const tbody = document.getElementById('tabla-historial-reingresos');
+                tbody.innerHTML = '';
+                const registros = [];
+                querySnapshot.forEach((doc) => registros.push({ id: doc.id, ...doc.data() }));
+                registros.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                if (registros.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">Sin reingresos registrados.</td></tr>`;
+                    return;
+                }
+                registros.forEach(data => {
+                    const fila = `<tr>
+                        <td>${data.fecha || 'N/A'}</td>
+                        <td>${data.solicitante || 'N/A'}</td>
+                        <td>${data.local || 'N/A'}</td>
+                        <td>${data.expedientes ? data.expedientes.length : 0}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger py-1 px-2" onclick="alert('Funcionalidad de detalle en desarrollo')">
+                                <i class="bi bi-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>`;
+                    tbody.insertAdjacentHTML('beforeend', fila);
+                });
+            } catch (error) {
+                console.error("Error al cargar historial de reingresos:", error);
+            }
+        };
     </script>
 
-
-
-
-<script>
-    const emailInput = document.getElementById('login-email');
-    const passInput = document.getElementById('login-password');
-    const loginForm = document.getElementById('login-form');
-    const loginContainer = document.getElementById('login-container');
-    const appContainer = document.getElementById('app-container');
-
-    // 1. CARGA INICIAL: Autocompletar y verificar sesión
-    window.addEventListener('DOMContentLoaded', () => {
-        // Autocompletar correo guardado (persiste siempre)
-        const savedUser = localStorage.getItem('sipex_last_user');
-        if (savedUser) emailInput.value = savedUser;
-
-        // Verificar sesión activa (sessionStorage se destruye al cerrar el navegador)
-        if (sessionStorage.getItem('sipex_session') === 'active') {
-            loginContainer.style.display = 'none';
-            appContainer.style.display = 'flex';
-        }
-    });
-
-    // 2. LÓGICA DE LOGIN (Con Enter y Clic)
-    async function manejarLogin(e) {
-        if (e) e.preventDefault();
-        
-        if (emailInput.value && passInput.value) {
-            // Guardar usuario para futuras visitas
-            localStorage.setItem('sipex_last_user', emailInput.value);
-            // Marcar sesión activa (se borrará al cerrar el navegador)
-            sessionStorage.setItem('sipex_session', 'active');
-            
-            loginContainer.style.display = 'none';
-            appContainer.style.display = 'flex';
-        } else {
-            alert("Por favor, ingresa correo y contraseña.");
-        }
-    }
-
-    // Escuchar el Enter en el formulario
-    loginForm.addEventListener('submit', manejarLogin);
-
-    // 3. CERRAR SESIÓN (Llamado por el botón del Sidebar)
-    // Asegúrate de que tu botón tenga: onclick="cerrarSesion()"
-    window.cerrarSesion = function() {
-        sessionStorage.removeItem('sipex_session'); // Borra la sesión
-        
-        // Limpiar campos de forma agresiva
-        passInput.value = '';
-        passInput.type = 'text'; 
-        passInput.type = 'password'; 
-        
-        loginContainer.style.display = 'flex';
-        appContainer.style.display = 'none';
-    };
-
-    // Vincular botón del sidebar
-    document.getElementById('btn-logout').addEventListener('click', cerrarSesion);
-</script>
 
 
 
@@ -1424,35 +1360,6 @@ function filtrarTablaReingresos() {
         } else {
             filas[i].style.display = "none";
         }
-    }
-}
-
-
-
-// Función para listar reingresos en la tabla de consulta
-async function cargarHistorialReingresos() {
-    try {
-        const q = await getDocs(collection(db, "reingresos"));
-        const tbody = document.getElementById('tabla-historial-reingresos');
-        tbody.innerHTML = ''; // Limpiar tabla
-        
-        q.forEach(doc => {
-            const data = doc.data();
-            const fila = `<tr>
-                <td>${data.fecha || 'N/A'}</td>
-                <td>${data.solicitante || 'N/A'}</td>
-                <td>${data.local || 'N/A'}</td>
-                <td>${data.expedientes ? data.expedientes.length : 0}</td>
-                <td>
-                    <button class="btn btn-sm btn-danger py-1 px-2" onclick="alert('Funcionalidad de detalle en desarrollo')">
-                        <i class="bi bi-eye"></i> Ver
-                    </button>
-                </td>
-            </tr>`;
-            tbody.insertAdjacentHTML('beforeend', fila);
-        });
-    } catch (error) {
-        console.error("Error al cargar historial:", error);
     }
 }
 
