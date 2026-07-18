@@ -1352,62 +1352,18 @@ function resetFormularioReingreso() {
 // ENCABEZADO DEL INFORME
 // ===============================
 
-// Corte Superior
-doc.setFont("Inter", "bold");
-doc.setFontSize(11);
-doc.setTextColor(40, 40, 40);
-doc.text("CORTE SUPERIOR DE JUSTICIA DEL SANTA", pageWidth / 2, 18, {
-    align: "center"
-});
+doc.setFont("Inter", "bold"); doc.setFontSize(11); doc.setTextColor(40, 40, 40);
+            doc.text("CORTE SUPERIOR DE JUSTICIA DEL SANTA", pageWidth / 2, 18, { align: "center" });
+            doc.setFontSize(10); doc.setFont("Inter", "normal");
+            doc.text("ARCHIVO DESCONCENTRADO DE LA CSJSA", pageWidth / 2, 23, { align: "center" });
+            
+            doc.setFont("Inter", "bold"); doc.setFontSize(9.5); doc.setTextColor(128, 0, 0); 
+            doc.text("SAAMIR - Sistema de Administración de Archivos, Microformas, Inventario y Reportes", pageWidth / 2, 30, { align: "center" });
 
-// Archivo Desconcentrado
-doc.setFont("Inter", "normal");
-doc.setFontSize(10);
-doc.text("ARCHIVO DESCONCENTRADO DE LA CSJSA", pageWidth / 2, 24, {
-    align: "center"
-});
+            doc.setLineWidth(0.4); doc.setDrawColor(128, 0, 0); doc.line(15, 34, pageWidth - 15, 34);
 
-// SAAMIR
-// SAAMIR
-doc.setFont("Inter", "bold");
-doc.setFontSize(16);
-doc.setTextColor(128, 0, 0);
-doc.text("SAAMIR", pageWidth / 2, 31, {
-    align: "center"
-});
-
-// Nombre del sistema (UNA SOLA LÍNEA, tamaño auto-ajustado: se ve más grande
-// pero se reduce automáticamente si el ancho de la hoja no alcanza)
-doc.setFont("Inter", "bold");
-doc.setTextColor(128, 0, 0);
-
-const textoSubtitulo = "Sistema de Administración de Archivos, Microformas, Inventario y Reportes";
-const anchoDisponibleSubtitulo = pageWidth - 30; // 15mm de margen a cada lado
-
-let subtituloFontSize = 12; // antes estaba fijo en 10, ahora arranca más grande
-doc.setFontSize(subtituloFontSize);
-while (doc.getTextWidth(textoSubtitulo) > anchoDisponibleSubtitulo && subtituloFontSize > 8) {
-    subtituloFontSize -= 0.5;
-    doc.setFontSize(subtituloFontSize);
-}
-
-doc.text(textoSubtitulo, pageWidth / 2, 37, { align: "center" });
-
-// Línea divisoria
-doc.setLineWidth(0.4);
-doc.setDrawColor(128, 0, 0);
-doc.line(15, 43, pageWidth - 15, 43);
-
-// Título
-doc.setFont("Inter", "bold");
-doc.setFontSize(12);
-doc.setTextColor(0, 0, 0);
-doc.text(
-    "INFORME CONSOLIDADO DE INVENTARIO DE EXISTENCIAS",
-    pageWidth / 2,
-    51,
-    { align: "center" }
-);
+            doc.setFontSize(12); doc.setTextColor(0, 0, 0);
+            doc.text("INFORME CONSOLIDADO DE INVENTARIO DE EXISTENCIAS", pageWidth / 2, 43, { align: "center" });
 // ===============================
 // DATOS DEL INFORME
 // ===============================
