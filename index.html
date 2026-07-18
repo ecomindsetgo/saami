@@ -1639,24 +1639,44 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
             const pageWidth = doc.internal.pageSize.getWidth();
 
             // Logo institucional (PJ-AD Archivo Desconcentrado - CSJ del Santa)
-            try {
-                doc.addImage(LOGO_PJAD_BASE64, "PNG", 15, 10, 22, 22);
-            } catch (e) {
-                console.error("No se pudo insertar el logo en el PDF:", e);
-            }
+// Función auxiliar: reduce el tamaño de fuente hasta que el texto quepa en maxWidth
+function fitFontSize(doc, text, maxWidth, startSize, minSize = 7) {
+    let size = startSize;
+    doc.setFontSize(size);
+    while (doc.getTextWidth(text) > maxWidth && size > minSize) {
+        size -= 0.25;
+        doc.setFontSize(size);
+    }
+    return size;
+}
 
-            // Título
-doc.setFont("Inter", "bold"); doc.setFontSize(14); doc.setTextColor(20, 20, 20);
-doc.text("REPORTE DE EXPEDIENTES REINGRESADOS", pageWidth / 2, 20, { align: "center" });
+// Logo institucional
+try {
+    doc.addImage(LOGO_PJAD_BASE64, "PNG", 15, 10, 22, 22);
+} catch (e) {
+    console.error("No se pudo insertar el logo en el PDF:", e);
+}
 
-doc.setFont("Inter", "bold"); doc.setFontSize(12); doc.setTextColor(128, 0, 0);
-doc.text("SAAMIR - Sistema de Administración de Archivos, Microformas, Inventario y Reportes", pageWidth / 2, 30, { align: "center" });
+const logoRight = 15 + 22 + 5; // fin del logo + margen (42mm)
+const textAreaWidth = pageWidth - logoRight - 15; // ancho disponible a la derecha del logo
+const textAreaCenter = logoRight + textAreaWidth / 2;
 
+// Título (en una sola línea, ajustado al ancho disponible)
+doc.setFont("helvetica", "bold"); doc.setTextColor(20, 20, 20);
+fitFontSize(doc, "REPORTE DE EXPEDIENTES REINGRESADOS", textAreaWidth, 14);
+doc.text("REPORTE DE EXPEDIENTES REINGRESADOS", textAreaCenter, 18, { align: "center" });
+
+// Subtítulo (en una sola línea, ajustado al ancho disponible)
+doc.setFont("helvetica", "bold"); doc.setTextColor(128, 0, 0);
+fitFontSize(doc, "SAAMIR - Sistema de Administración de Archivos, Microformas, Inventario y Reportes", textAreaWidth, 12);
+doc.text("SAAMIR - Sistema de Administración de Archivos, Microformas, Inventario y Reportes", textAreaCenter, 26, { align: "center" });
+
+// Línea separadora (debajo del logo, y=40 ya está bien)
 doc.setDrawColor(128, 0, 0); doc.setLineWidth(0.4);
 doc.line(15, 40, pageWidth - 15, 40);
 
 // Datos de cabecera
-doc.setFont("Inter", "bold"); doc.setFontSize(9); doc.setTextColor(0, 0, 0);
+doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(0, 0, 0);
 doc.text(`Correlativo (ID): ${correlativo}`, 15, 47);
 doc.text(`Fecha: ${fecha}`, pageWidth - 15, 47, { align: "right" });
 
@@ -1664,7 +1684,6 @@ doc.text(`Solicitante: ${solicitante}`, 15, 52);
 doc.text(`Local de Reingreso: ${local}`, pageWidth - 15, 52, { align: "right" });
 
 doc.text(`Entregado por: ${entregado}`, 15, 57);
-doc.text(``, pageWidth - 15, 57, { align: "right" }); // deja la fila pareja aunque vacía
 
             // Tabla de expedientes
             const filasTabla = expedientes.map((e, idx) => [
