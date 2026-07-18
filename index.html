@@ -1378,7 +1378,7 @@ doc.text("SAAMIR", pageWidth / 2, 31, {
 
 // Nombre del sistema (UNA SOLA LÍNEA)
 doc.setFont("Inter", "bold");
-doc.setFontSize(8); // o 7.5 si aún no entra
+doc.setFontSize(10); // o 7.5 si aún no entra
 doc.setTextColor(128, 0, 0);
 
 doc.text(
@@ -1438,7 +1438,7 @@ doc.text(lote.fecha, 48, 65);
             filasTablaAutotable.push([ 'Σ', 'TOTAL CONSOLIDADO', '-', '-', lote.totalTeorico.toString(), lote.totalFaltantes.toString(), lote.totalReal.toString() ]);
 
             doc.autoTable({
-                startY: 64,
+                startY: 75,
                 margin: { left: 15, right: 15 },
                 theme: 'grid',
                 headStyles: { fillColor: [128, 0, 0], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', fontSize: 9 },
