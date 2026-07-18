@@ -1441,17 +1441,29 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
 
             currentY = doc.lastAutoTable.finalY + 8;
 
-            doc.setFont("Inter", "bold"); doc.setFontSize(9); doc.text("OBSERVACIONES GENERALES DEL INVENTARIO:", 15, currentY);
-            currentY += 5; doc.setFont("Inter", "normal"); doc.setFontSize(8.5);
+            // Se calcula primero el texto y el alto que va a ocupar el bloque de
+            // observaciones (encabezado + texto + margen previo a las firmas),
+            // y si no alcanza el espacio en la página actual, se pasa a una nueva
+            // ANTES de imprimir nada. Así "OBSERVACIONES" nunca queda pegado al
+            // borde inferior de la hoja.
+            const pageHeight = doc.internal.pageSize.getHeight();
             const textoObservaciones = lote.observaciones && lote.observaciones.trim() ? lote.observaciones : 'Ninguna.';
             const lineasObservaciones = doc.splitTextToSize(textoObservaciones, pageWidth - 30);
+            const espacioNecesarioFirmas = 30;
+            const alturaBloqueObservaciones = 5 + (lineasObservaciones.length * 4) + 15;
+
+            if (currentY + alturaBloqueObservaciones + espacioNecesarioFirmas > pageHeight - 20) {
+                doc.addPage();
+                currentY = 25;
+            }
+
+            doc.setFont("Inter", "bold"); doc.setFontSize(9); doc.text("OBSERVACIONES GENERALES DEL INVENTARIO:", 15, currentY);
+            currentY += 5; doc.setFont("Inter", "normal"); doc.setFontSize(8.5);
             doc.text(lineasObservaciones, 15, currentY);
             currentY += (lineasObservaciones.length * 4) + 15;
 
-            // Si no queda espacio suficiente para el bloque de firmas, se pasa a una nueva página
-            // en vez de dejar que se encime con las observaciones o el pie de página.
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const espacioNecesarioFirmas = 30;
+            // Chequeo final por si, aun así, el bloque de firmas no alcanza a entrar
+            // (por ejemplo, texto de observaciones inusualmente largo).
             if (currentY + espacioNecesarioFirmas > pageHeight - 20) {
                 doc.addPage();
                 currentY = 30;
