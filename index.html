@@ -804,7 +804,12 @@
                 <div class="card p-4 border-0 shadow-sm">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="fw-bold m-0 text-dark"><i class="bi bi-table me-2"></i>Consolidados en la Base de Datos Cloud</h6>
-                        <span class="badge bg-secondary p-2" id="contador-registros">0 Lotes</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-secondary p-2" id="contador-registros">0 Lotes</span>
+                            <button class="btn btn-sm btn-outline-primary" onclick="cargarInventariosDesdeCloud()" title="Actualizar desde la nube">
+                                <i class="bi bi-arrow-clockwise"></i> Actualizar
+                            </button>
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle border" style="font-size: 0.85rem;">
@@ -1352,7 +1357,7 @@
                     Swal.fire('Acceso Denegado', 'No cuenta con autorización para visualizar este módulo.', 'error');
                     return;
                 }
-                renderTablaMicroformas();
+                cargarMicroformasDesdeCloud();
             }
 
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -1365,6 +1370,10 @@
 
             if (viewId === 'view-consultas-reingresos') {
                 cargarHistorialReingresos();
+            }
+
+            if (viewId === 'view-consultas') {
+                cargarInventariosDesdeCloud();
             }
         }
 
@@ -1596,6 +1605,7 @@
                 actualizarDashboardGlobal();
             } catch (e) {
                 console.error("Error al cargar microformas:", e);
+                Swal.fire('Error de Conexión', 'No se pudo cargar el control de microformas: ' + e.message, 'error');
             }
         }
 
@@ -1991,7 +2001,10 @@
 
                 actualizarDashboardGlobal();
                 filtrarRegistros();
-            } catch (error) { console.error(error); }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error de Conexión', 'No se pudieron cargar los lotes de inventario: ' + error.message, 'error');
+            }
         }
 
         async function cargarHistorialReingresosParaDashboard() {
@@ -2006,6 +2019,7 @@
                 actualizarDashboardGlobal();
             } catch (error) {
                 console.error(error);
+                Swal.fire('Error de Conexión', 'No se pudo cargar el historial de reingresos: ' + error.message, 'error');
             }
         }
 
@@ -2637,6 +2651,7 @@
                 filtrarHistorialReingresos();
             } catch (error) {
                 console.error(error);
+                Swal.fire('Error de Conexión', 'No se pudo cargar el historial de reingresos: ' + error.message, 'error');
             }
         };
 
