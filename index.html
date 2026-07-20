@@ -108,7 +108,6 @@
             margin-bottom: 2rem;
         }
 
-        /* Estilos mejorados para las tarjetas del Dashboard */
         .dashboard-card {
             background: white;
             border-radius: 10px;
@@ -173,6 +172,27 @@
         .view-section.active {
             display: block;
         }
+
+        /* Estilos específicos para impresión limpia del Dashboard */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #view-dashboard, #view-dashboard * {
+                visibility: visible;
+            }
+            #view-dashboard {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -191,7 +211,6 @@
                     <label class="form-label text-secondary small fw-medium">Correo Institucional</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
-                        <!-- Se añadió el id para persistencia del correo -->
                         <input type="email" id="login-email" class="form-control bg-light border-start-0" required placeholder="usuario@pj.gob.pe">
                     </div>
                 </div>
@@ -210,7 +229,7 @@
 
     <!-- APP PRINCIPAL -->
     <div id="app-container" style="display: none;">
-        <aside id="sidebar">
+        <aside id="sidebar" class="no-print">
             <div class="p-3 text-center border-bottom border-secondary border-opacity-25">
                 <h4 class="fw-bold m-0 text-white" style="letter-spacing: 1px;"><i class="bi bi-folder-symlink-fill me-2"></i>SAAMIR</h4>
                 <span class="badge bg-secondary mt-1 px-2.5 py-1" style="font-size: 0.7rem;">Archivo Desconcentrado</span>
@@ -250,7 +269,7 @@
         </aside>
 
         <main id="main-content">
-            <div class="navbar-top d-flex justify-content-between align-items-center">
+            <div class="navbar-top d-flex justify-content-between align-items-center no-print">
                 <div class="d-flex align-items-center gap-2">
                     <h5 class="m-0 fw-semibold text-secondary" id="page-title">Dashboard Principal</h5>
                 </div>
@@ -327,9 +346,20 @@
     </div>
 </section>
 
-            <!-- DASHBOARD GLOBAL (MEJORADO Y ORDENADO) -->
+            <!-- DASHBOARD GLOBAL -->
             <section id="view-dashboard" class="view-section active">
                 
+                <!-- Cabecera imprimible del Dashboard -->
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="bi bi-grid-1x2-fill me-2 text-primary"></i>Dashboard Global Institucional</h4>
+                        <p class="text-muted small m-0">Corte Superior de Justicia del Santa - Archivo Desconcentrado</p>
+                    </div>
+                    <button class="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 no-print" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Imprimir Reporte Global
+                    </button>
+                </div>
+
                 <!-- Sección 1: Indicadores de Inventario -->
                 <div class="mb-4">
                     <h6 class="text-uppercase fw-bold text-muted small mb-3 tracking-wider"><i class="bi bi-box-seam me-1 text-primary"></i> Resumen de Inventario Institucional</h6>
@@ -908,7 +938,6 @@
             inventario_escritura: ["ALFREDO CRUZADO", "ACRUZADO", "ROBERTO DAVILA", "RDAVILA", "JORGE IZQUIERDO", "JIZQUIERDO", "MANUEL BARANDIARAN", "MBARANDIARAN", "TEFILO GABINO", "TGABINO"]
         };
 
-        // Función robusta para limpiar espacios múltiples y asegurar estandarización de nombres
         function normalizarTexto(texto) {
             if (!texto) return '';
             return texto.trim().toUpperCase().replace(/\s+/g, ' ');
@@ -995,7 +1024,6 @@
         let baseDatosReingresos = [];
         let modalInstance = null;
 
-        // Recuperar el correo guardado en localStorage al iniciar la aplicación
         window.addEventListener('DOMContentLoaded', () => {
             const correoGuardado = localStorage.getItem('saamir_ultimo_correo');
             if (correoGuardado) {
@@ -1082,7 +1110,6 @@
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
             try {
-                // Guardar el correo en localStorage para que persista al actualizar la ventana
                 localStorage.setItem('saamir_ultimo_correo', email);
 
                 await signInWithEmailAndPassword(auth, email, password);
