@@ -854,15 +854,25 @@ const dataMaestra = {
             inventario_escritura: ["ALFREDO CRUZADO", "ROBERTO DÁVILA", "JORGE IZQUIERDO", "MANUEL BARANDIARAN", "TEÓFILO GABINO"]
         };
 
-        function aplicarPermisos(nombreUsuario) {
+function aplicarPermisos(nombreUsuario) {
             const puedeReingresos = PERMISOS.reingresos_escritura.includes(nombreUsuario);
             const puedeInventario = PERMISOS.inventario_escritura.includes(nombreUsuario);
 
+            // Permisos de Reingresos
             document.getElementById('btn-guardar-reingreso')?.toggleAttribute('disabled', !puedeReingresos);
             document.querySelectorAll('#view-reingresos input, #view-reingresos select').forEach(el => el.disabled = !puedeReingresos);
 
+            // Permisos de Inventario (Formulario general y botones de rangos)
             document.getElementById('form-inventario')?.querySelectorAll('input, select, button[type=submit]')
                 .forEach(el => el.disabled = !puedeInventario);
+
+            // 🔒 BLOQUEO ESPECÍFICO: Botón "+ Agregar Rango al Lote" y botones de acción en la grilla
+            const btnAgregarRango = document.querySelector('button[onclick="abrirModalRango()"]');
+            if (btnAgregarRango) {
+                btnAgregarRango.disabled = !puedeInventario;
+                btnAgregarRango.style.pointerEvents = puedeInventario ? 'auto' : 'none';
+                btnAgregarRango.classList.toggle('opacity-50', !puedeInventario);
+            }
 
             // Aviso visual de modo solo-consulta
             const avisoExistente = document.getElementById('aviso-solo-consulta');
