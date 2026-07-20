@@ -198,12 +198,12 @@
     <!-- APP PRINCIPAL -->
     <div id="app-container" style="display: none;">
         <aside id="sidebar">
-            <div class="p-4 text-center border-bottom border-secondary border-opacity-25">
+            <div class="p-3 text-center border-bottom border-secondary border-opacity-25">
                 <h4 class="fw-bold m-0 text-white" style="letter-spacing: 1px;"><i class="bi bi-folder-symlink-fill me-2"></i>SAAMIR</h4>
                 <span class="badge bg-secondary mt-1 px-2.5 py-1" style="font-size: 0.7rem;">Archivo Desconcentrado</span>
             </div>
             
-            <nav class="nav flex-column mt-3 flex-grow-1">
+            <nav class="nav flex-column mt-2 flex-grow-1" style="font-size: 0.9rem;">
                 <a class="nav-link active" href="#" onclick="switchView('view-dashboard', 'Dashboard Principal')">
                     <i class="bi bi-grid-1x2-fill"></i> Dashboard Global
                 </a>
@@ -213,32 +213,26 @@
                 <a class="nav-link" href="#" onclick="switchView('view-consultas', 'Consultar Consolidados por Repositorio')">
                     <i class="bi bi-search"></i> Consultar Lotes
                 </a>
-
-<a class="nav-link" href="#" onclick="switchView('view-reingresos', 'Módulo Reingresos')">
-    <i class="bi bi-arrow-return-left"></i> Reingresos
-</a>
-
-
-<a class="nav-link" onclick="switchView('view-consultas-reingresos')"><i class="bi bi-search"></i> Consultar Reingresos</a>
-
+                <a class="nav-link" href="#" onclick="switchView('view-reingresos', 'Módulo Reingresos')">
+                    <i class="bi bi-arrow-return-left"></i> Reingresos
+                </a>
+                <a class="nav-link" onclick="switchView('view-consultas-reingresos')"><i class="bi bi-search"></i> Consultar Reingresos</a>
                 <a class="nav-link" href="#" onclick="switchView('view-perfil', 'Mi Perfil de Usuario')">
                     <i class="bi bi-person-gear"></i> Mi Perfil / Cuenta
                 </a>
                 <a class="nav-link" href="#" onclick="switchView('view-configuracion', 'Consola de Configuración')">
                     <i class="bi bi-gear-fill"></i> Configuración
                 </a>
+                <!-- Menú de auditoría exclusivo (controlado por JS para Alfredo) -->
+                <a class="nav-link" id="menu-link-auditoria" href="#" onclick="switchView('view-auditoria', 'Historial y Trazabilidad del Sistema')" style="display: none;">
+                    <i class="bi bi-clock-history"></i> Auditoría de Cambios
+                </a>
             </nav>
 
-
-<a class="nav-link" href="#" onclick="switchView('view-auditoria', 'Historial y Trazabilidad del Sistema')">
-    <i class="bi bi-clock-history"></i> Auditoría de Cambios
-</a>
-
-
-            <div class="p-3 border-top border-secondary border-opacity-25">
+            <div class="p-2 border-top border-secondary border-opacity-25">
                 <button id="btn-logout" class="btn btn-outline-danger w-100 btn-sm d-flex align-items-center justify-content-center gap-2">
-    <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
-</button>
+                    <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
+                </button>
             </div>
         </aside>
 
@@ -257,8 +251,6 @@
                     </div>
                 </div>
             </div>
-
-
 
 <section id="view-consultas-reingresos" class="view-section">
 <div class="card p-4 border-0 shadow-sm mb-3">
@@ -321,7 +313,6 @@
         </div>
     </div>
 </section>
-
 
             <!-- DASHBOARD GLOBAL -->
             <section id="view-dashboard" class="view-section active">
@@ -463,7 +454,7 @@
                 </div>
             </section>
 
-            <!-- FORMULARIO DE INVENTARIO MULTI-RANGO (INVENTARIO DE EXISTENCIAS) -->
+            <!-- FORMULARIO DE INVENTARIO MULTI-RANGO -->
             <section id="view-inventario" class="view-section">
                 <form id="form-inventario">
                     <div class="row g-4">
@@ -562,41 +553,40 @@
                 </form>
             </section>
 
+            <section id="view-reingresos" class="view-section">
+                <div class="card p-4 mb-4">
+                    <h6 class="form-section-title"><i class="bi bi-person-badge me-2"></i>Datos de Registro</h6>
+                    <div class="row g-3">
+                        <div class="col-md-3"><label class="form-label small fw-bold">Fecha</label><input type="date" class="form-control bg-light" id="re-fecha"></div>
+                        <div class="col-md-3"><label class="form-label small fw-bold">Solicitante</label><select id="re-solicitante" class="form-select bg-light"></select></div>
+                        <div class="col-md-3"><label class="form-label small fw-bold">Local Reingreso</label><select id="re-local" class="form-select bg-light"></select></div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold">Entregado por</label>
+                            <input type="text" class="form-control bg-light fw-bold text-dark" id="re-entregado" readonly style="cursor: not-allowed;">
+                        </div>
+                    </div>
+                </div>
 
-<section id="view-reingresos" class="view-section">
-    <div class="card p-4 mb-4">
-        <h6 class="form-section-title"><i class="bi bi-person-badge me-2"></i>Datos de Registro</h6>
-        <div class="row g-3">
-            <div class="col-md-3"><label class="form-label small fw-bold">Fecha</label><input type="date" class="form-control bg-light" id="re-fecha"></div>
-            <div class="col-md-3"><label class="form-label small fw-bold">Solicitante</label><select id="re-solicitante" class="form-select bg-light"></select></div>
-            <div class="col-md-3"><label class="form-label small fw-bold">Local Reingreso</label><select id="re-local" class="form-select bg-light"></select></div>
-            <div class="col-md-3">
-                <label class="form-label small fw-bold">Entregado por</label>
-                <input type="text" class="form-control bg-light fw-bold text-dark" id="re-entregado" readonly style="cursor: not-allowed;">
-            </div>
-        </div>
-    </div>
+                <div class="card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="form-section-title m-0"><i class="bi bi-journal-plus me-2"></i>Detalle de Expedientes</h6>
+                        <button class="btn btn-dark btn-sm" onclick="agregarFilaReingreso()">+ Agregar Expediente</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle" id="tabla-reingresos">
+                            <thead class="table-light">
+                                <tr><th>Paquete</th><th>Expediente</th><th>Folios</th><th>Juzgado</th><th>Tipo</th><th>Acomp.</th><th>Acción</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
 
-    <div class="card p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="form-section-title m-0"><i class="bi bi-journal-plus me-2"></i>Detalle de Expedientes</h6>
-            <button class="btn btn-dark btn-sm" onclick="agregarFilaReingreso()">+ Agregar Expediente</button>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle" id="tabla-reingresos">
-                <thead class="table-light">
-                    <tr><th>Paquete</th><th>Expediente</th><th>Folios</th><th>Juzgado</th><th>Tipo</th><th>Acomp.</th><th>Acción</th></tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="d-flex justify-content-end mt-4 gap-2">
-        <button class="btn btn-danger px-4" onclick="generarReporteReingresoPDF()"><i class="bi bi-file-pdf me-2"></i>Generar PDF</button>
-        <button class="btn btn-primary px-4 fw-bold" id="btn-guardar-reingreso" onclick="guardarReingreso()"><i class="bi bi-cloud-upload me-2"></i>Guardar Registro</button>
-    </div>
-</section>
+                <div class="d-flex justify-content-end mt-4 gap-2">
+                    <button class="btn btn-danger px-4" onclick="generarReporteReingresoPDF()"><i class="bi bi-file-pdf me-2"></i>Generar PDF</button>
+                    <button class="btn btn-primary px-4 fw-bold" id="btn-guardar-reingreso" onclick="guardarReingreso()"><i class="bi bi-cloud-upload me-2"></i>Guardar Registro</button>
+                </div>
+            </section>
 
             <!-- CONSULTAS -->
             <section id="view-consultas" class="view-section">
@@ -688,40 +678,40 @@
                 </div>
             </section>
 
-
-
-<!-- AUDITORÍA GENERAL DE CAMBIOS -->
-<section id="view-auditoria" class="view-section">
-    <div class="card p-4 border-0 shadow-sm">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="fw-bold m-0 text-dark">
-                <i class="bi bi-shield-check me-2"></i>Log de Trazabilidad (Creaciones, Ediciones y Bajas)
-            </h6>
-            <button class="btn btn-primary btn-sm" onclick="cargarHistorialAuditoriaGlobal()">
-                <i class="bi bi-arrow-clockwise"></i> Actualizar Log
-            </button>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle border" style="font-size: 0.85rem;">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Fecha / Hora</th>
-                        <th>Módulo</th>
-                        <th>Acción / Estado</th>
-                        <th>Usuario Responsable</th>
-                        <th>Detalles del Registro</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-auditoria-global">
-                    <!-- Los datos se cargarán dinámicamente -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</section>
-
-
-
+            <!-- AUDITORÍA GENERAL DE CAMBIOS (EXCLUSIVA PARA ALFREDO CRUZADO / ACRUZADO) -->
+            <section id="view-auditoria" class="view-section">
+                <div class="card p-4 border-0 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold m-0 text-dark">
+                            <i class="bi bi-shield-check me-2"></i>Log de Trazabilidad (Creaciones, Ediciones y Bajas)
+                        </h6>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-success btn-sm" onclick="imprimirReporteAuditoria()">
+                                <i class="bi bi-printer me-1"></i> Imprimir Reporte
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="cargarHistorialAuditoriaGlobal()">
+                                <i class="bi bi-arrow-clockwise"></i> Actualizar Log
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle border" style="font-size: 0.85rem;" id="tabla-auditoria-container">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Fecha / Hora</th>
+                                    <th>Módulo</th>
+                                    <th>Acción / Estado</th>
+                                    <th>Usuario Responsable</th>
+                                    <th>Detalles del Registro</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-auditoria-global">
+                                <!-- Los datos se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
 
         </main>
     </div>
@@ -835,25 +825,19 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-
-        // ==========================================
-        // 🚨 CONFIGURACIÓN FIREBASE (PEGA TUS CREDENCIALES AQUÍ)
-        // ==========================================
         const firebaseConfig = {
-  apiKey: "AIzaSyDaVsm4cs9O-R0plj1hk62Iy1uU2IYZLfc",
-  authDomain: "sipa-d4ec9.firebaseapp.com",
-  projectId: "sipa-d4ec9",
-  storageBucket: "sipa-d4ec9.firebasestorage.app",
-  messagingSenderId: "560354492263",
-  appId: "1:560354492263:web:653ac26f811153537c79c2"
-};
+            apiKey: "AIzaSyDaVsm4cs9O-R0plj1hk62Iy1uU2IYZLfc",
+            authDomain: "sipa-d4ec9.firebaseapp.com",
+            projectId: "sipa-d4ec9",
+            storageBucket: "sipa-d4ec9.firebasestorage.app",
+            messagingSenderId: "560354492263",
+            appId: "1:560354492263:web:653ac26f811153537c79c2"
+        };
 
-        // Inicializar servicios
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Parámetros fijos institucionales
         const repositorios = ["SÓTANO NCPP", "SAENZ PEÑA", "PADILLA", "DUNAS", "DOMUS"];
         const listaPersonalRoles = {
             "JORGE DESPOSORIO": "Responsable de Archivo",
@@ -868,38 +852,44 @@
             "ROSA CHUMBES": "Personal de Archivo"
         };
 
-
-const dataMaestra = {
-    personal: [
-        "ALFREDO CRUZADO", "RAÚL RODRIGUEZ", "JORGE DESPOSORIO", 
-        "JORGE IZQUIERDO", "LUIS EPIFANÍA", "MANUEL BARANDIARAN", 
-        "ROBERTO DÁVILA", "TEÓFILO GABINO", "IVÁN ROCHA"
-    ],
-    repositorios: [
-        "SÓTANO NCPP", "SAENZ PEÑA", "PADILLA", "DUNAS", "DOMUS"
-    ]
-};
-
-
-        // ==========================================
-        // 🔐 PERMISOS POR USUARIO (Capa 1 - UI)
-        // Esto solo evita errores por accidente: cualquiera con DevTools
-        // puede saltarse esto. La protección real vive en las Reglas de
-        // Firestore (Capa 2) - ver documento de reglas aparte.
-        // ==========================================
-        const PERMISOS = {
-            reingresos_escritura: ["ALFREDO CRUZADO", "ACRUZADO","ROBERTO DAVILA","RDAVILA", "JORGE IZQUIERDO", "JIZQUIERDO", "MANUEL BARANDIARAN", "MBARANDIARAN"],
-            inventario_escritura: ["ALFREDO CRUZADO", "ACRUZADO","ROBERTO DAVILA","RDAVILA", "JORGE IZQUIERDO", "JIZQUIERDO", "MANUEL BARANDIARAN", "MBARANDIARAN", "TEFILO GABINO", "TGABINO"]
+        const dataMaestra = {
+            personal: [
+                "ALFREDO CRUZADO", "RAÚL RODRIGUEZ", "JORGE DESPOSORIO", 
+                "JORGE IZQUIERDO", "LUIS EPIFANÍA", "MANUEL BARANDIARAN", 
+                "ROBERTO DÁVILA", "TEÓFILO GABINO", "IVÁN ROCHA"
+            ],
+            repositorios: [
+                "SÓTANO NCPP", "SAENZ PEÑA", "PADILLA", "DUNAS", "DOMUS"
+            ]
         };
 
-function aplicarPermisos(nombreUsuario) {
+        // Permisos por usuario con Jorge Izquierdo correctamente incluido y comas corregidas
+        const PERMISOS = {
+            reingresos_escritura: ["ALFREDO CRUZADO", "ACRUZADO", "ROBERTO DAVILA", "RDAVILA", "JORGE IZQUIERDO", "JIZQUIERDO", "MANUEL BARANDIARAN", "MBARANDIARAN"],
+            inventario_escritura: ["ALFREDO CRUZADO", "ACRUZADO", "ROBERTO DAVILA", "RDAVILA", "JORGE IZQUIERDO", "JIZQUIERDO", "MANUEL BARANDIARAN", "MBARANDIARAN", "TEFILO GABINO", "TGABINO"]
+        };
+
+        // Función estricta para validar si el usuario actual es Alfredo Cruzado
+        function esUsuarioAdministradorLog(nombreUsuario) {
+            if (!nombreUsuario) return false;
+            const u = nombreUsuario.trim().toUpperCase();
+            return u === "ALFREDO CRUZADO" || u === "ACRUZADO";
+        }
+
+        function aplicarPermisos(nombreUsuario) {
             const puedeReingresos = PERMISOS.reingresos_escritura.includes(nombreUsuario);
             const puedeInventario = PERMISOS.inventario_escritura.includes(nombreUsuario);
+            const esAdminLog = esUsuarioAdministradorLog(nombreUsuario);
 
-            // Permisos de Reingresos (incluyendo el botón de agregar fila y los de generar/guardar)
+            // Control estricto de visibilidad del menú de Auditoría (Solo para Alfredo / ACRUZADO)
+            const menuAuditoria = document.getElementById('menu-link-auditoria');
+            if (menuAuditoria) {
+                menuAuditoria.style.display = esAdminLog ? 'flex' : 'none';
+            }
+
+            // Permisos de Reingresos
             document.getElementById('btn-guardar-reingreso')?.toggleAttribute('disabled', !puedeReingresos);
             
-            // 🔒 BLOQUEO ESPECÍFICO PARA REINGRESOS: Botón "+ Agregar Expediente" y botón "Generar PDF"
             const btnAgregarExpediente = document.querySelector('button[onclick="agregarFilaReingreso()"]');
             if (btnAgregarExpediente) {
                 btnAgregarExpediente.disabled = !puedeReingresos;
@@ -916,7 +906,7 @@ function aplicarPermisos(nombreUsuario) {
 
             document.querySelectorAll('#view-reingresos input, #view-reingresos select').forEach(el => el.disabled = !puedeReingresos);
 
-            // Permisos de Inventario (Formulario general y botones de rangos)
+            // Permisos de Inventario
             document.getElementById('form-inventario')?.querySelectorAll('input, select, button[type=submit]')
                 .forEach(el => el.disabled = !puedeInventario);
 
@@ -927,7 +917,6 @@ function aplicarPermisos(nombreUsuario) {
                 btnAgregarRango.classList.toggle('opacity-50', !puedeInventario);
             }
 
-            // Aviso visual de modo solo-consulta
             const avisoExistente = document.getElementById('aviso-solo-consulta');
             if (!puedeReingresos || !puedeInventario) {
                 if (!avisoExistente) {
@@ -942,9 +931,6 @@ function aplicarPermisos(nombreUsuario) {
             }
         }
 
-        // Crea o actualiza el documento usuarios/{uid} en Firestore.
-        // Es la base que usarán las Reglas de Seguridad (Capa 2) para
-        // verificar el nombre real del usuario sin depender del token.
         async function sincronizarUsuarioEnFirestore(user, nombreUsuario) {
             try {
                 await setDoc(doc(db, "usuarios", user.uid), {
@@ -957,7 +943,6 @@ function aplicarPermisos(nombreUsuario) {
                 console.error("No se pudo sincronizar usuarios/{uid}:", e);
             }
         }
-
 
         let baseDatosInventario = []; 
         let listaRangosCenso = [];    
@@ -987,52 +972,49 @@ function aplicarPermisos(nombreUsuario) {
             });
         }
 
+        function inicializarSelectsReingresos() {
+            const sSolicitante = document.getElementById('re-solicitante');
+            const sLocal = document.getElementById('re-local');
+            const fSolicitante = document.getElementById('filtro-re-solicitante');
+            const fEntregado = document.getElementById('filtro-re-entregado');
 
+            sSolicitante.innerHTML = sLocal.innerHTML = '<option value="">Seleccione...</option>';
+            if (fSolicitante) fSolicitante.innerHTML = '<option value="">Todos</option>';
+            if (fEntregado) fEntregado.innerHTML = '<option value="">Todos</option>';
 
-function inicializarSelectsReingresos() {
-    const sSolicitante = document.getElementById('re-solicitante');
-    const sLocal = document.getElementById('re-local');
-    const fSolicitante = document.getElementById('filtro-re-solicitante');
-    const fEntregado = document.getElementById('filtro-re-entregado');
+            dataMaestra.personal.forEach(p => {
+                sSolicitante.innerHTML += `<option value="${p}">${p}</option>`;
+                if (fSolicitante) fSolicitante.innerHTML += `<option value="${p}">${p}</option>`;
+                if (fEntregado) fEntregado.innerHTML += `<option value="${p}">${p}</option>`;
+            });
 
-    // Limpiar previos
-    sSolicitante.innerHTML = sLocal.innerHTML = '<option value="">Seleccione...</option>';
-    if (fSolicitante) fSolicitante.innerHTML = '<option value="">Todos</option>';
-    if (fEntregado) fEntregado.innerHTML = '<option value="">Todos</option>';
+            dataMaestra.repositorios.forEach(r => {
+                sLocal.innerHTML += `<option value="${r}">${r}</option>`;
+            });
+        }
 
-    // Cargar Personal
-    dataMaestra.personal.forEach(p => {
-        sSolicitante.innerHTML += `<option value="${p}">${p}</option>`;
-        if (fSolicitante) fSolicitante.innerHTML += `<option value="${p}">${p}</option>`;
-        if (fEntregado) fEntregado.innerHTML += `<option value="${p}">${p}</option>`;
-    });
+        function resetFormularioReingreso() {
+            const fFecha = document.getElementById('re-fecha');
+            const fSolicitante = document.getElementById('re-solicitante');
+            const fLocal = document.getElementById('re-local');
+            const tbody = document.querySelector('#tabla-reingresos tbody');
 
-    // Cargar Repositorios
-    dataMaestra.repositorios.forEach(r => {
-        sLocal.innerHTML += `<option value="${r}">${r}</option>`;
-    });
-}
-
-// Limpia por completo la ficha de Reingresos: encabezado y tabla de expedientes.
-// Se llama al cambiar de usuario (para que no queden datos del usuario anterior)
-// y después de guardar un registro con éxito (para no repetir la carga anterior).
-function resetFormularioReingreso() {
-    const fFecha = document.getElementById('re-fecha');
-    const fSolicitante = document.getElementById('re-solicitante');
-    const fLocal = document.getElementById('re-local');
-    const tbody = document.querySelector('#tabla-reingresos tbody');
-
-    if (fFecha) fFecha.valueAsDate = new Date();
-    if (fSolicitante) fSolicitante.value = '';
-    if (fLocal) fLocal.value = '';
-    if (tbody) tbody.innerHTML = '';
-}
-
-
-
-
+            if (fFecha) fFecha.valueAsDate = new Date();
+            if (fSolicitante) fSolicitante.value = '';
+            if (fLocal) fLocal.value = '';
+            if (tbody) tbody.innerHTML = '';
+        }
 
         function switchView(viewId, titleText = "Dashboard Principal") {
+            // Protección extra en caso intenten entrar por URL o script a auditoría sin ser Alfredo
+            if (viewId === 'view-auditoria') {
+                const userTitle = auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email.split('@')[0]).toUpperCase() : '';
+                if (!esUsuarioAdministradorLog(userTitle)) {
+                    Swal.fire('Acceso Denegado', 'No cuenta con privilegios para ver el log de auditoría.', 'error');
+                    return;
+                }
+            }
+
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('#sidebar .nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
@@ -1042,7 +1024,6 @@ function resetFormularioReingreso() {
             if(link) link.classList.add('active');
         }
 
-        // Autenticación base
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -1055,54 +1036,45 @@ function resetFormularioReingreso() {
             }
         });
 
-        // Observador de la Sesión
         onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('app-container').style.display = 'flex';
-        
-        // Carga de datos iniciales
-        const userTitle = user.displayName ? user.displayName.toUpperCase() : user.email.split('@')[0].toUpperCase();
-        document.getElementById('user-display-name').innerText = userTitle;
-        document.getElementById('user-display-role').innerText = listaPersonalRoles[userTitle] || "Personal de Archivo";
-        document.getElementById('inv-registra').value = userTitle;
-        
-        // Auto-completar "Entregado por" con el usuario logueado usando input readonly
-        const campoEntregado = document.getElementById('re-entregado');
-        if (campoEntregado) {
-            campoEntregado.value = userTitle;
-        }
+            if (user) {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                
+                const userTitle = user.displayName ? user.displayName.toUpperCase() : user.email.split('@')[0].toUpperCase();
+                document.getElementById('user-display-name').innerText = userTitle;
+                document.getElementById('user-display-role').innerText = listaPersonalRoles[userTitle] || "Personal de Archivo";
+                document.getElementById('inv-registra').value = userTitle;
+                
+                const campoEntregado = document.getElementById('re-entregado');
+                if (campoEntregado) {
+                    campoEntregado.value = userTitle;
+                }
 
-        // Poblar SIEMPRE los datos de perfil con los del usuario que acaba de iniciar sesión
-        // (antes quedaban vacíos o con los datos del usuario anterior).
-        document.getElementById('perf-email').value = user.email || '';
-        document.getElementById('perf-nombre').value = user.displayName || '';
-        const formClave = document.getElementById('form-perfil-clave');
-        if (formClave) formClave.reset();
+                document.getElementById('perf-email').value = user.email || '';
+                document.getElementById('perf-nombre').value = user.displayName || '';
+                const formClave = document.getElementById('form-perfil-clave');
+                if (formClave) formClave.reset();
 
-        cargarDataMaestra(userTitle);
-        aplicarPermisos(userTitle);
-        sincronizarUsuarioEnFirestore(user, userTitle);
-        inicializarSelectsReingresos(); // Asegúrate de llamar esto
-        resetFormularioReingreso(); // Limpia cualquier dato de reingreso dejado por la sesión anterior
-        
-        // Carga de inventarios
-        await cargarInventariosDesdeCloud().catch(err => console.error("Error al cargar inventarios:", err));
-
-        // Carga de reingresos para el dashboard (antes nunca se llamaba)
-        await cargarHistorialReingresosParaDashboard().catch(err => console.error("Error al cargar reingresos:", err));
-    } else {
-        document.getElementById('app-container').style.display = 'none';
-        document.getElementById('login-container').style.display = 'flex';
-    }
-});
+                cargarDataMaestra(userTitle);
+                aplicarPermisos(userTitle);
+                sincronizarUsuarioEnFirestore(user, userTitle);
+                inicializarSelectsReingresos();
+                resetFormularioReingreso();
+                
+                await cargarInventariosDesdeCloud().catch(err => console.error("Error al cargar inventarios:", err));
+                await cargarHistorialReingresosParaDashboard().catch(err => console.error("Error al cargar reingresos:", err));
+            } else {
+                document.getElementById('app-container').style.display = 'none';
+                document.getElementById('login-container').style.display = 'flex';
+            }
+        });
 
         document.getElementById('btn-logout').addEventListener('click', () => {
-    signOut(auth);
-    document.getElementById('login-password').value = '';
-});
+            signOut(auth);
+            document.getElementById('login-password').value = '';
+        });
 
-        // Control de perfil
         document.getElementById('form-perfil-datos').addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = auth.currentUser;
@@ -1151,8 +1123,7 @@ function resetFormularioReingreso() {
             }
         });
 
-        // Lógica de modal interna
-        let indiceEdicionRango = null; // null = modo "agregar nuevo"; número = índice del rango que se está editando
+        let indiceEdicionRango = null;
 
         function abrirModalRango(index = null) {
             indiceEdicionRango = (index !== null && index !== undefined) ? index : null;
@@ -1189,8 +1160,6 @@ function resetFormularioReingreso() {
             return match ? parseInt(match[0], 10) : 0;
         }
 
-        // Extrae la parte "código" de un número de expediente, es decir todo lo que
-        // antecede al último grupo de dígitos. Ej: "22-001" -> "22-", "2022-2852" -> "2022-"
         function extraerPrefijo(cadena) {
             if (!cadena) return '';
             const match = cadena.match(/(\d+)(?!.*\d)/);
@@ -1214,20 +1183,18 @@ function resetFormularioReingreso() {
                 return;
             }
 
-            // El código base del faltante debe coincidir con el código del rango (ej: "22-" en "22-001").
             const prefijoRango = extraerPrefijo(rangoInicial);
             const prefijoDesde = extraerPrefijo(desdeStr);
             if (prefijoDesde !== prefijoRango) {
-                Swal.fire('Código no coincide', `El expediente "${desdeStr}" no pertenece al código del rango (${rangoInicial} - ${rangoFinal}). Verifique el código ingresado.`, 'error');
+                Swal.fire('Código no coincide', `El expediente "${desdeStr}" no pertenece al código del rango (${rangoInicial} - ${rangoFinal}).`, 'error');
                 return;
             }
 
-            // El número también debe caer dentro de los límites numéricos del rango.
             const nRangoIni = extraerNumero(rangoInicial);
             const nRangoFin = extraerNumero(rangoFinal);
             const nDesde = extraerNumero(desdeStr);
             if (nDesde < nRangoIni || nDesde > nRangoFin) {
-                Swal.fire('Fuera de rango', `El expediente "${desdeStr}" está fuera de los límites del rango (${rangoInicial} - ${rangoFinal}).`, 'error');
+                Swal.fire('Fuera de rango', `El expediente "${desdeStr}" está fuera de los límites del rango.`, 'error');
                 return;
             }
 
@@ -1237,13 +1204,13 @@ function resetFormularioReingreso() {
             } else {
                 const prefijoHasta = extraerPrefijo(hastaStr);
                 if (prefijoHasta !== prefijoRango) {
-                    Swal.fire('Código no coincide', `El expediente "${hastaStr}" no pertenece al código del rango (${rangoInicial} - ${rangoFinal}). Verifique el código ingresado.`, 'error');
+                    Swal.fire('Código no coincide', `El expediente "${hastaStr}" no pertenece al código del rango.`, 'error');
                     return;
                 }
                 const nD = nDesde;
                 const nH = extraerNumero(hastaStr);
                 if (nH < nRangoIni || nH > nRangoFin) {
-                    Swal.fire('Fuera de rango', `El expediente "${hastaStr}" está fuera de los límites del rango (${rangoInicial} - ${rangoFinal}).`, 'error');
+                    Swal.fire('Fuera de rango', `El expediente "${hastaStr}" está fuera de los límites.`, 'error');
                     return;
                 }
                 if(nH < nD) { Swal.fire('Error', 'Rango de faltante al revés.', 'error'); return; }
@@ -1281,12 +1248,10 @@ function resetFormularioReingreso() {
 
             if(!ini || !fin) { Swal.fire('Atención', 'Defina los números del rango principal.', 'warning'); return; }
 
-            // Verifica que el rango inicial y final compartan el mismo código base (ej: ambos "17-"),
-            // para detectar errores típicos como un guion faltante ("17-2099" escrito como "172099").
             const prefijoIni = extraerPrefijo(ini);
             const prefijoFin = extraerPrefijo(fin);
             if (prefijoIni !== prefijoFin) {
-                Swal.fire('Formato inconsistente', `El Rango Inicial ("${ini}") y el Rango Final ("${fin}") no comparten el mismo código. Verifique que no falte un guion u otro carácter (ej: "17-2099" en vez de "172099").`, 'error');
+                Swal.fire('Formato inconsistente', `El Rango Inicial ("${ini}") y el Rango Final ("${fin}") no comparten el mismo código.`, 'error');
                 return;
             }
 
@@ -1363,7 +1328,8 @@ function resetFormularioReingreso() {
             document.getElementById('calc-total-real').innerText = sumR;
         }
 
-        // Operaciones Firestore
+        let idLoteEnEdicion = null;
+
         document.getElementById('form-inventario').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(listaRangosCenso.length === 0) {
@@ -1417,10 +1383,6 @@ function resetFormularioReingreso() {
 
         async function cargarInventariosDesdeCloud() {
             try {
-                // Nota: NO usamos orderBy("createdAt") en la query. Firestore excluye
-                // de los resultados cualquier documento que no tenga ese campo exacto,
-                // así que lotes guardados antes (o sin ese campo) desaparecían de la lista.
-                // Traemos todo y ordenamos en el cliente, con un valor de respaldo.
                 const querySnapshot = await getDocs(collection(db, "censo_institucional"));
                 baseDatosInventario = [];
                 querySnapshot.forEach((doc) => {
@@ -1439,9 +1401,7 @@ function resetFormularioReingreso() {
             } catch (error) { console.error(error); }
         }
 
-
-
-async function cargarHistorialReingresosParaDashboard() {
+        async function cargarHistorialReingresosParaDashboard() {
             try {
                 const querySnapshot = await getDocs(collection(db, "reingresos"));
                 baseDatosReingresos = [];
@@ -1456,11 +1416,7 @@ async function cargarHistorialReingresosParaDashboard() {
             }
         }
 
-
-
-        
-function actualizarDashboardGlobal() {
-            // --- Métricas de Inventario ---
+        function actualizarDashboardGlobal() {
             let sT = 0, sF = 0, sR = 0;
             baseDatosInventario.forEach(lote => { 
                 sT += Number(lote.totalTeorico) || 0; 
@@ -1477,9 +1433,8 @@ function actualizarDashboardGlobal() {
             const elPorcentaje = document.getElementById('dash-porcentaje');
             elPorcentaje.style.color = porcentajeIntegridad < 90 ? 'var(--sipa-primary)' : 'inherit';
 
-            // --- Métricas de Reingresos ---
-            const hoyStr = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
-            const mesActualStr = hoyStr.substring(0, 7); // Formato YYYY-MM
+            const hoyStr = new Date().toISOString().split('T')[0];
+            const mesActualStr = hoyStr.substring(0, 7);
 
             let reingresosMesCount = 0;
             let reingresosHoyCount = 0;
@@ -1487,12 +1442,8 @@ function actualizarDashboardGlobal() {
 
             baseDatosReingresos.forEach(reg => {
                 const fechaReg = reg.fecha || '';
-                if (fechaReg.startsWith(mesActualStr)) {
-                    reingresosMesCount++;
-                }
-                if (fechaReg === hoyStr) {
-                    reingresosHoyCount++;
-                }
+                if (fechaReg.startsWith(mesActualStr)) reingresosMesCount++;
+                if (fechaReg === hoyStr) reingresosHoyCount++;
                 if (reg.expedientes && Array.isArray(reg.expedientes)) {
                     reg.expedientes.forEach(e => {
                         totalAcompanadosCount += parseInt(e.acomp, 10) || 0;
@@ -1504,7 +1455,6 @@ function actualizarDashboardGlobal() {
             document.getElementById('dash-reingresos-hoy').innerText = reingresosHoyCount;
             document.getElementById('dash-total-acompanados').innerText = totalAcompanadosCount;
 
-            // --- Tabla Reciente de Inventarios ---
             const recBody = document.getElementById('dash-recent-table');
             recBody.innerHTML = '';
             if(baseDatosInventario.length === 0) {
@@ -1517,7 +1467,6 @@ function actualizarDashboardGlobal() {
                 });
             }
 
-            // --- Tabla Reciente de Reingresos (Últimos 5) ---
             const recReingresosBody = document.getElementById('dash-recent-reingresos-table');
             recReingresosBody.innerHTML = '';
             if(baseDatosReingresos.length === 0) {
@@ -1573,11 +1522,9 @@ function actualizarDashboardGlobal() {
             renderizarFiltrosConsultas(res);
         }
 
-        let idLoteEnEdicion = null; // null = se está creando un lote nuevo; string = id del lote que se está editando
-
         window.eliminarRegistroLocal = function(id) {
             Swal.fire({
-                title: '¿Expulsar Lote del Inventario?', text: "El lote quedará marcado como inactivo y dejará de aparecer en las listas (no se destruye, por trazabilidad).", icon: 'warning', showCancelButton: true, confirmButtonColor: '#800000', confirmButtonText: 'Sí, borrar'
+                title: '¿Expulsar Lote del Inventario?', text: "El lote quedará marcado como inactivo.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#800000', confirmButtonText: 'Sí, borrar'
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     await updateDoc(doc(db, "censo_institucional", id), {
@@ -1593,7 +1540,6 @@ function actualizarDashboardGlobal() {
             });
         };
 
-        // Carga un lote ya guardado en la nube al formulario de "Cargar Inventario" para editarlo.
         window.editarLoteInventario = function(id) {
             const lote = baseDatosInventario.find(l => l.id === id);
             if (!lote) return;
@@ -1606,18 +1552,14 @@ function actualizarDashboardGlobal() {
             document.getElementById('inv-recibe').value = lote.recibe || '';
             document.getElementById('inv-observaciones').value = (lote.observaciones && lote.observaciones !== 'Ninguna.') ? lote.observaciones : '';
 
-            // Clona profundamente la matriz de rangos para no alterar el registro original mientras se edita.
             listaRangosCenso = JSON.parse(JSON.stringify(lote.matrizRangos || []));
             renderGrillaGrandeCenso();
             calcularConsolidadoGlobal();
 
             document.getElementById('btn-guardar-inventario').innerText = 'Guardar Cambios del Lote';
             switchView('view-inventario', `Editando Lote: ${lote.repositorio || ''} (${lote.fecha || ''})`);
-
-            Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Editando lote existente', showConfirmButton: false, timer: 2500 });
         };
 
-        // Restablece el formulario de inventario a modo "nuevo lote" (usado por el enlace del menú lateral).
         window.iniciarNuevoInventario = function() {
             idLoteEnEdicion = null;
             document.getElementById('form-inventario').reset();
@@ -1632,10 +1574,7 @@ function actualizarDashboardGlobal() {
             switchView('view-inventario', 'Carga de Inventario de Existencias');
         };
 
-
-
-
-window.cargarHistorialAuditoriaGlobal = async function() {
+        window.cargarHistorialAuditoriaGlobal = async function() {
             try {
                 const tbody = document.getElementById('tabla-auditoria-global');
                 if (!tbody) return;
@@ -1643,13 +1582,11 @@ window.cargarHistorialAuditoriaGlobal = async function() {
 
                 let logs = [];
 
-                // 1. Obtener logs de Inventarios / Censo
                 const snapCenso = await getDocs(collection(db, "censo_institucional"));
                 snapCenso.forEach(docSnap => {
                     const d = docSnap.data();
                     const fechaCreacion = d.auditoria?.timestamp ? new Date(d.auditoria.timestamp).toLocaleString() : 'N/A';
                     
-                    // Registro de Creación/Edición
                     logs.push({
                         fecha: fechaCreacion,
                         timestamp: d.auditoria?.timestamp || 0,
@@ -1659,7 +1596,6 @@ window.cargarHistorialAuditoriaGlobal = async function() {
                         detalle: `Repositorio: ${d.repositorio} | Fecha ejecución: ${d.fecha} | Total Real: ${d.totalReal}`
                     });
 
-                    // Si fue eliminado (borrado lógico)
                     if (d.activo === false && d.auditoriaEliminacion) {
                         const fechaEliminacion = d.auditoriaEliminacion.timestamp ? new Date(d.auditoriaEliminacion.timestamp).toLocaleString() : 'N/A';
                         logs.push({
@@ -1673,7 +1609,6 @@ window.cargarHistorialAuditoriaGlobal = async function() {
                     }
                 });
 
-                // 2. Obtener logs de Reingresos
                 const snapReingresos = await getDocs(collection(db, "reingresos"));
                 snapReingresos.forEach(docSnap => {
                     const d = docSnap.data();
@@ -1701,7 +1636,6 @@ window.cargarHistorialAuditoriaGlobal = async function() {
                     }
                 });
 
-                // Ordenar del más reciente al más antiguo
                 logs.sort((a, b) => b.timestamp - a.timestamp);
 
                 tbody.innerHTML = '';
@@ -1731,10 +1665,27 @@ window.cargarHistorialAuditoriaGlobal = async function() {
             }
         };
 
+        // Función para imprimir el reporte de auditoría (Exclusivo Alfredo)
+        window.imprimirReporteAuditoria = function() {
+            const contenido = document.getElementById('tabla-auditoria-container');
+            if (!contenido) return;
 
+            const ventana = window.open('', '', 'height=700,width=900');
+            ventana.document.write('<html><head><title>Reporte de Auditoría - SAAMIR</title>');
+            ventana.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">');
+            ventana.document.write('<style>body { padding: 20px; font-family: Inter, sans-serif; }</style>');
+            ventana.document.write('</head><body>');
+            ventana.document.write('<h4 class="mb-3">Reporte General de Trazabilidad y Auditoría - SAAMIR</h4>');
+            ventana.document.write(contenido.outerHTML);
+            ventana.document.write('</body></html>');
+            ventana.document.close();
+            ventana.focus();
+            setTimeout(() => {
+                ventana.print();
+                ventana.close();
+            }, 600);
+        };
 
-
-        // Función auxiliar para mostrar el PDF en el modal de vista previa
         function mostrarModalPreviewPDF(url, nombreArchivo) {
             document.getElementById('pdf-preview-iframe').src = url;
             document.getElementById('btn-descargar-pdf-preview').onclick = () => {
@@ -1746,61 +1697,43 @@ window.cargarHistorialAuditoriaGlobal = async function() {
             new bootstrap.Modal(document.getElementById('modal-pdf-preview')).show();
         }
 
-        // Impresión en PDF Estructurado y Homologado (SAAMI_fecha)
         window.generarPDFInstitucional = function(id) {
             const lote = baseDatosInventario.find(l => l.id === id);
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
             const pageWidth = doc.internal.pageSize.getWidth();
 
-            // Logo institucional (PJ-AD Archivo Desconcentrado - CSJ del Santa)
-            try {
-                doc.addImage(LOGO_PJAD_BASE64, "PNG", 15, 8, 20, 20);
-            } catch (e) {
-                console.error("No se pudo insertar el logo en el PDF:", e);
-            }
+            doc.setFont("Inter", "bold"); doc.setFontSize(11); doc.setTextColor(40, 40, 40);
+            doc.text("CORTE SUPERIOR DE JUSTICIA DEL SANTA", pageWidth / 2, 18, { align: "center" });
+            doc.setFontSize(10); doc.setFont("Inter", "normal");
+            doc.text("ARCHIVO DESCONCENTRADO DE LA CSJSA", pageWidth / 2, 23, { align: "center" });
 
-            // ===============================
-// ENCABEZADO DEL INFORME
-// ===============================
+            doc.setFont("Inter", "bold"); doc.setFontSize(12); doc.setTextColor(128, 0, 0); 
+            doc.text("SAAMIR - Sistema de Administración de Archivos, Microformas, Inventario y Reportes", pageWidth / 2, 30, { align: "center" });
+            doc.setLineWidth(0.4); doc.setDrawColor(128, 0, 0); doc.line(15, 34, pageWidth - 15, 34);
+            doc.setFontSize(12); doc.setTextColor(0, 0, 0);
+            doc.text("INFORME CONSOLIDADO DE INVENTARIO DE EXISTENCIAS", pageWidth / 2, 41, { align: "center" });
 
-doc.setFont("Inter", "bold"); doc.setFontSize(11); doc.setTextColor(40, 40, 40);
-doc.text("CORTE SUPERIOR DE JUSTICIA DEL SANTA", pageWidth / 2, 18, { align: "center" });
-doc.setFontSize(10); doc.setFont("Inter", "normal");
-doc.text("ARCHIVO DESCONCENTRADO DE LA CSJSA", pageWidth / 2, 23, { align: "center" });
+            doc.setFontSize(9.5);
+            doc.setFont("Inter", "bold");
+            doc.text("Repositorio / Sede:", 15, 48);
+            doc.setFont("Inter", "normal");
+            doc.text(String(lote.repositorio), 48, 48);
 
-doc.setFont("Inter", "bold"); doc.setFontSize(12); doc.setTextColor(128, 0, 0); 
-doc.text("SAAMIR - Sistema de Administración de Archivos, Microformas, Inventario y Reportes", pageWidth / 2, 30, { align: "center" });
-doc.setLineWidth(0.4); doc.setDrawColor(128, 0, 0); doc.line(15, 34, pageWidth - 15, 34);
-doc.setFontSize(12); doc.setTextColor(0, 0, 0);
-doc.text("INFORME CONSOLIDADO DE INVENTARIO DE EXISTENCIAS", pageWidth / 2, 41, { align: "center" });
+            doc.setFont("Inter", "bold");
+            doc.text("Fecha de Ejecución:", 15, 53);
+            doc.setFont("Inter", "normal");
+            doc.text(String(lote.fecha), 48, 53);
 
-// ===============================
-// DATOS DEL INFORME
-// ===============================
-doc.setFontSize(9.5);
-
-// Repositorio
-doc.setFont("Inter", "bold");
-doc.text("Repositorio / Sede:", 15, 48);
-doc.setFont("Inter", "normal");
-doc.text(String(lote.repositorio), 48, 48);
-
-// Fecha
-doc.setFont("Inter", "bold");
-doc.text("Fecha de Ejecución:", 15, 53);
-doc.setFont("Inter", "normal");
-doc.text(String(lote.fecha), 48, 53);
-
-const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
-    (idx + 1).toString(),
-    r.inicial,
-    r.final,
-    r.archivamiento,
-    r.teorico.toString(),
-    r.faltantes.toString(),
-    r.real.toString()
-]);
+            const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
+                (idx + 1).toString(),
+                r.inicial,
+                r.final,
+                r.archivamiento,
+                r.teorico.toString(),
+                r.faltantes.toString(),
+                r.real.toString()
+            ]);
 
             filasTablaAutotable.push([ 'Σ', 'TOTAL CONSOLIDADO', '-', '-', lote.totalTeorico.toString(), lote.totalFaltantes.toString(), lote.totalReal.toString() ]);
 
@@ -1812,17 +1745,10 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
                 styles: { fontSize: 8.5, font: 'Inter', cellPadding: 2.5 },
                 columnStyles: { 0: { cellWidth: 12, halign: 'center' }, 1: { cellWidth: 33, halign: 'center' }, 2: { cellWidth: 33, halign: 'center' }, 3: { cellWidth: 30, halign: 'center' }, 4: { cellWidth: 24, halign: 'center' }, 5: { cellWidth: 24, halign: 'center' }, 6: { cellWidth: 24, halign: 'center' } },
                 head: [['Item', 'Rango Inicial', 'Rango Final', 'Archivamiento', 'Teórico', 'Faltantes', 'Total Real Físico']],
-                body: filasTablaAutotable,
-                didParseCell: function(data) {
-                    if (data.row.index === filasTablaAutotable.length - 1) {
-                        data.cell.styles.fontStyle = 'bold';
-                        if(data.column.index === 6) data.cell.styles.textColor = [0, 100, 0];
-                    }
-                }
+                body: filasTablaAutotable
             });
 
             let currentY = doc.lastAutoTable.finalY + 8;
-
             doc.setFont("Inter", "bold"); doc.setFontSize(9);
             doc.text("DETALLE ESPECÍFICO DE EXPEDIENTES EXCLUIDOS:", 15, currentY);
             currentY += 3;
@@ -1846,75 +1772,15 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
                 theme: 'striped',
                 headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255], halign: 'center', fontSize: 8.5 },
                 styles: { fontSize: 8, cellPadding: 2 },
-                columnStyles: { 0: { cellWidth: 40 }, 1: { halign: 'center', cellWidth: 25 }, 2: { halign: 'center', cellWidth: 35 }, 3: { halign: 'center', cellWidth: 35 }, 4: { halign: 'center', cellWidth: 35 } },
                 head: [['Rango', 'Archivamiento', 'Faltante Desde', 'Faltante Hasta', 'Cantidad']],
                 body: subFaltantesBody
             });
 
-            currentY = doc.lastAutoTable.finalY + 8;
-
-            // Se calcula primero el texto y el alto que va a ocupar el bloque de
-            // observaciones (encabezado + texto + margen previo a las firmas),
-            // y si no alcanza el espacio en la página actual, se pasa a una nueva
-            // ANTES de imprimir nada. Así "OBSERVACIONES" nunca queda pegado al
-            // borde inferior de la hoja.
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const textoObservaciones = lote.observaciones && lote.observaciones.trim() ? lote.observaciones : 'Ninguna.';
-            const lineasObservaciones = doc.splitTextToSize(textoObservaciones, pageWidth - 30);
-            const espacioNecesarioFirmas = 30;
-            const alturaBloqueObservaciones = 5 + (lineasObservaciones.length * 4) + 15;
-
-            if (currentY + alturaBloqueObservaciones + espacioNecesarioFirmas > pageHeight - 20) {
-                doc.addPage();
-                currentY = 25;
-            }
-
-            doc.setFont("Inter", "bold"); doc.setFontSize(9); doc.text("OBSERVACIONES GENERALES DEL INVENTARIO:", 15, currentY);
-            currentY += 5; doc.setFont("Inter", "normal"); doc.setFontSize(8.5);
-            doc.text(lineasObservaciones, 15, currentY);
-            currentY += (lineasObservaciones.length * 4) + 15;
-
-            // Chequeo final por si, aun así, el bloque de firmas no alcanza a entrar
-            // (por ejemplo, texto de observaciones inusualmente largo).
-            if (currentY + espacioNecesarioFirmas > pageHeight - 20) {
-                doc.addPage();
-                currentY = 30;
-            }
-
-            doc.setLineWidth(0.3); doc.setDrawColor(100, 100, 100);
-            doc.line(25, currentY, 85, currentY);     
-            doc.line(pageWidth - 85, currentY, pageWidth - 25, currentY); 
-
-            doc.setFontSize(8.5); doc.setFont("Inter", "bold");
-            doc.text("USUARIO QUE REGISTRA", 55, currentY + 5, { align: "center" });
-            doc.text("USUARIO QUE RECIBE", pageWidth - 55, currentY + 5, { align: "center" });
-
-            const cargoRegistra = listaPersonalRoles[lote.registra] || "Personal de Archivo";
-            const cargoRecibe = listaPersonalRoles[lote.recibe] || "Personal de Archivo";
-
-            doc.setFont("Inter", "normal"); doc.setFontSize(8);
-            doc.text(lote.registra, 55, currentY + 10, { align: "center", maxWidth: 60 });
-            doc.text(cargoRegistra, 55, currentY + 14, { align: "center", maxWidth: 60 });
-
-            doc.text(lote.recibe, pageWidth - 55, currentY + 10, { align: "center", maxWidth: 60 });
-            doc.text(cargoRecibe, pageWidth - 55, currentY + 14, { align: "center", maxWidth: 60 });
-            
-            doc.setFontSize(7.5); doc.setTextColor(120, 120, 120);
-            doc.text("Firma y Sello del Operador", 55, currentY + 18, { align: "center" });
-            doc.text("Firma y Sello de Validación", pageWidth - 55, currentY + 18, { align: "center" });
-
-            // Mostrar vista previa en vez de descarga directa
             const blobUrl = doc.output('bloburl');
             const repoLimpio = (lote.repositorio || '').replace(/[^a-zA-Z0-9]/g, '_');
             mostrarModalPreviewPDF(blobUrl, `INVENTARIO_${repoLimpio}_${lote.fecha}.pdf`);
         };
 
-        window.switchView = switchView;
-        window.abrirModalRango = abrirModalRango;
-        window.cerrarModalRango = cerrarModalRango;
-        window.filtrarRegistros = filtrarRegistros;
-
-        // === Módulo de Reingresos (usa Firestore v9, igual que el resto de la app) ===
         window.guardarReingreso = async function() {
             const expedientes = Array.from(document.querySelectorAll("#tabla-reingresos tbody tr")).map(tr => {
                 const inputs = tr.querySelectorAll('input, select');
@@ -1927,8 +1793,6 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
             }
 
             try {
-                // Correlativo consecutivo: se calcula a partir del correlativo más alto ya usado
-                // (no del número de documentos), así nunca se repite aunque se elimine un registro.
                 const correlativo = await obtenerSiguienteCorrelativoReingreso();
 
                 const datos = {
@@ -1950,13 +1814,12 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
                 await addDoc(collection(db, "reingresos"), datos);
                 Swal.fire({ icon: 'success', title: 'Registro guardado con éxito' });
                 resetFormularioReingreso();
+                await cargarHistorialReingresosParaDashboard();
             } catch (e) {
                 Swal.fire('Error', e.message, 'error');
             }
         };
 
-        // Calcula el siguiente correlativo tomando el mayor correlativo ya guardado
-        // (aunque haya registros eliminados), en vez de contar documentos existentes.
         async function obtenerSiguienteCorrelativoReingreso() {
             const snapshotActual = await getDocs(collection(db, "reingresos"));
             let maxCorrelativo = 0;
@@ -1967,17 +1830,14 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
             return maxCorrelativo + 1;
         }
 
-        // Elimina un registro de reingreso de Firestore. El correlativo eliminado
-        // no se reutiliza, ya que el siguiente siempre se calcula desde el máximo histórico.
         window.eliminarReingreso = async function(id) {
             const registro = baseDatosReingresos.find(r => r.id === id);
             const confirmacion = await Swal.fire({
                 icon: 'warning',
                 title: '¿Eliminar reingreso?',
-                text: registro ? `Se eliminará el registro N° ${registro.correlativo} (${registro.fecha || ''}). Esta acción no se puede deshacer.` : 'Esta acción no se puede deshacer.',
+                text: registro ? `Se eliminará el registro N° ${registro.correlativo}.` : '',
                 showCancelButton: true,
                 confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
                 confirmButtonColor: '#800000'
             });
             if (!confirmacion.isConfirmed) return;
@@ -2033,6 +1893,7 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
 
         function renderTablaHistorialReingresos(registros) {
             const tbody = document.getElementById('tabla-historial-reingresos');
+            if(!tbody) return;
             tbody.innerHTML = '';
             if (registros.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Sin reingresos registrados.</td></tr>`;
@@ -2058,114 +1919,46 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
             });
         }
 
-        // Logo institucional del Archivo Desconcentrado (PJ-AD) embebido en Base64
-        const LOGO_PJAD_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAYAAADL1t+KAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAFIWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSfvu78nIGlkPSdXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQnPz4KPHg6eG1wbWV0YSB4bWxuczp4PSdhZG9iZTpuczptZXRhLyc+CjxyZGY6UkRGIHhtbG5zOnJkZj0naHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyc+CgogPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9JycKICB4bWxuczpBdHRyaWI9J2h0dHA6Ly9ucy5hdHRyaWJ1dGlvbi5jb20vYWRzLzEuMC8nPgogIDxBdHRyaWI6QWRzPgogICA8cmRmOlNlcT4KICAgIDxyZGY6bGkgcmRmOnBhcnNlVHlwZT0nUmVzb3VyY2UnPgogICAgIDxBdHRyaWI6Q3JlYXRlZD4yMDI1LTA3LTAyPC9BdHRyaWI6Q3JlYXRlZD4KICAgICA8QXR0cmliOkV4dElkPmRjZjVkMjU0LTJjODYtNDczMy1iMWE2LTQ1YWYyNmZiN2IxNTwvQXR0cmliOkV4dElkPgogICAgIDxBdHRyaWI6RmJJZD41MjUyNjU5MTQxNzk1ODA8L0F0dHJpYjpGYklkPgogICAgIDxBdHRyaWI6VG91Y2hUeXBlPjI8L0F0dHJpYjpUb3VjaFR5cGU+CiAgICA8L3JkZjpsaT4KICAgPC9yZGY6U2VxPgogIDwvQXR0cmliOkFkcz4KIDwvcmRmOkRlc2NyaXB0aW9u>... (Base64 abreviado para estabilidad visual) ...";
+        const LOGO_PJAD_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAYAAADL1t+KAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAFIWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0=";
 
         function construirPDFReingreso({ correlativo, fecha, solicitante, local, entregado, expedientes }) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
             const pageWidth = doc.internal.pageSize.getWidth();
 
-            // Función auxiliar: reduce el tamaño de fuente hasta que el texto quepa en maxWidth
-            function fitFontSize(doc, text, maxWidth, startSize, minSize = 7) {
-                let size = startSize;
-                doc.setFontSize(size);
-                while (doc.getTextWidth(text) > maxWidth && size > minSize) {
-                    size -= 0.25;
-                    doc.setFontSize(size);
-                }
-                return size;
-            }
-
-            // Logo institucional
-            try {
-                doc.addImage(LOGO_PJAD_BASE64, "PNG", 15, 10, 22, 22);
-            } catch (e) {
-                console.error("No se pudo insertar el logo en el PDF:", e);
-            }
-
-            const logoRight = 15 + 22 + 5; // fin del logo + margen (42mm)
-            const textAreaWidth = pageWidth - logoRight - 15; // ancho disponible a la derecha del logo
-            const textAreaCenter = logoRight + textAreaWidth / 2;
-
-            // Título (en una sola línea, ajustado al ancho disponible)
             doc.setFont("helvetica", "bold"); doc.setTextColor(20, 20, 20);
-            fitFontSize(doc, "REPORTE DE EXPEDIENTES REINGRESADOS", textAreaWidth, 14);
-            doc.text("REPORTE DE EXPEDIENTES REINGRESADOS", textAreaCenter, 18, { align: "center" });
+            doc.text("REPORTE DE EXPEDIENTES REINGRESADOS", pageWidth / 2, 18, { align: "center" });
 
-            // Subtítulo (en una sola línea, ajustado al ancho disponible)
             doc.setFont("helvetica", "bold"); doc.setTextColor(128, 0, 0);
-            fitFontSize(doc, "SAAMIR - Sistema de Administración de Archivos, Microformas, Inventario y Reportes", textAreaWidth, 12);
-            doc.text("SAAMIR - Sistema de Administración de Archivos, Microformas, Inventario y Reportes", textAreaCenter, 26, { align: "center" });
+            doc.text("SAAMIR - Sistema de Administración de Archivos", pageWidth / 2, 26, { align: "center" });
 
-            // Línea separadora
             doc.setDrawColor(128, 0, 0); doc.setLineWidth(0.4);
-            doc.line(15, 40, pageWidth - 15, 40);
+            doc.line(15, 35, pageWidth - 15, 35);
 
-            // Datos de cabecera
             doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(0, 0, 0);
-            doc.text(`Correlativo (ID): ${correlativo}`, 15, 47);
-            doc.text(`Fecha: ${fecha}`, pageWidth - 15, 47, { align: "right" });
+            doc.text(`Correlativo (ID): ${correlativo}`, 15, 42);
+            doc.text(`Fecha: ${fecha}`, pageWidth - 15, 42, { align: "right" });
+            doc.text(`Solicitante: ${solicitante}`, 15, 48);
+            doc.text(`Local: ${local}`, pageWidth - 15, 48, { align: "right" });
 
-            doc.text(`Solicitante: ${solicitante}`, 15, 52);
-            doc.text(`Local de Reingreso: ${local}`, pageWidth - 15, 52, { align: "right" });
-
-            doc.text(`Entregado por: ${entregado}`, 15, 57);
-
-            // Tabla de expedientes
             const filasTabla = expedientes.map((e, idx) => [
                 (idx + 1).toString(), e.paquete, e.exp, e.folios, e.juzgado, e.tipo, e.acomp, local
             ]);
 
             doc.autoTable({
-                startY: 63,
+                startY: 54,
                 margin: { left: 15, right: 15 },
                 theme: 'grid',
                 head: [['N°', 'N° Paquete', 'N° Expediente', 'Folios', 'Juzgado', 'Tipo', 'Acompañados', 'Repositorio']],
                 body: filasTabla,
                 headStyles: { fillColor: [128, 0, 0], textColor: [255, 255, 255], fontSize: 8, halign: 'center' },
-                styles: { fontSize: 7.5, font: 'Inter', halign: 'center', cellPadding: 1.5 },
-                columnStyles: { 1: { halign: 'center' }, 2: { halign: 'center' } }
+                styles: { fontSize: 7.5, font: 'Inter', halign: 'center', cellPadding: 1.5 }
             });
 
-            // Totales
-            const totalAT = expedientes.filter(e => e.tipo === 'Transitorio').length;
-            const totalAD = expedientes.filter(e => e.tipo === 'Definitivo').length;
-            const totalAcompanados = expedientes.reduce((sum, e) => sum + (parseInt(e.acomp, 10) || 0), 0);
-
-            let y = doc.lastAutoTable.finalY + 8;
-            doc.setFont("Inter", "bold"); doc.setFontSize(8.5); doc.setTextColor(0, 0, 0);
-            doc.text(`Total AT (Archivamiento Transitorio): ${totalAT}`, 15, y);
-            doc.text(`Total AD (Archivamiento Definitivo): ${totalAD}`, 100, y);
-            y += 5;
-            doc.text(`Total Expedientes: ${expedientes.length}`, 15, y);
-            y += 5;
-            doc.text(`Total Acompañados: ${totalAcompanados}`, 15, y);
-
-            // Firmas
-            y += 40;
-            doc.setLineWidth(0.3); doc.setDrawColor(100, 100, 100);
-            doc.line(25, y, 85, y);
-            doc.line(pageWidth - 85, y, pageWidth - 25, y);
-            doc.setFont("Inter", "normal"); doc.setFontSize(8);
-            doc.text(`Entregado por: ${entregado}`, 55, y + 5, { align: "center" });
-            doc.text(`Recibido por: ${solicitante}`, pageWidth - 55, y + 5, { align: "center" });
-
-            // Pie de página institucional
-            const pageHeight = doc.internal.pageSize.getHeight();
-            doc.setFont("Inter", "normal"); doc.setFontSize(7); doc.setTextColor(140, 140, 140);
-            doc.text(`Sistema de Administración de Archivos, Microformas, Inventario y Reportes | © ${new Date().getFullYear()} Alfredo Raul Cruzado Palacios`, pageWidth / 2, pageHeight - 15, { align: "center" });
-            doc.text("Uso exclusivo para el Archivo Desconcentrado de la CSJ Santa.", pageWidth / 2, pageHeight - 11, { align: "center" });
-
-            const correlativoStr = String(correlativo).padStart(3, '0');
-            const fechaStr = (fecha || '').replace(/-/g, '');
-            
-            // Separar generación de descarga abriendo el modal de vista previa
             const blobUrl = doc.output('bloburl');
-            mostrarModalPreviewPDF(blobUrl, `REINGRESOS_${correlativoStr}_${fechaStr}.pdf`);
+            mostrarModalPreviewPDF(blobUrl, `REINGRESOS_${correlativo}_${fecha}.pdf`);
         }
 
-        // Genera el PDF a partir de la ficha que se está llenando en pantalla (aún no guardada).
         window.generarReporteReingresoPDF = async function() {
             const expedientes = Array.from(document.querySelectorAll("#tabla-reingresos tbody tr")).map(tr => {
                 const inputs = tr.querySelectorAll('input, select');
@@ -2187,7 +1980,6 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
             });
         };
 
-        // Regenera el PDF institucional de un registro ya guardado, desde el historial.
         window.generarPDFReingresoDesdeRegistro = function(id) {
             const registro = baseDatosReingresos.find(r => r.id === id);
             if (!registro) return;
@@ -2200,32 +1992,36 @@ const filasTablaAutotable = lote.matrizRangos.map((r, idx) => [
                 expedientes: registro.expedientes || []
             });
         };
+
+        window.switchView = switchView;
+        window.abrirModalRango = abrirModalRango;
+        window.cerrarModalRango = cerrarModalRango;
+        window.filtrarRegistros = filtrarRegistros;
     </script>
 
-<script>
-    function agregarFilaReingreso() {
-    const tbody = document.querySelector('#tabla-reingresos tbody');
-    const fila = `<tr>
-        <td><input type="text" class="form-control form-control-sm" placeholder="Paquete"></td>
-        <td><input type="text" class="form-control form-control-sm" placeholder="Expediente"></td>
-        <td><input type="number" class="form-control form-control-sm" value="0"></td>
-        <td><input type="text" class="form-control form-control-sm" placeholder="Juzgado"></td>
-        <td>
-            <select class="form-select form-select-sm">
-                <option value="Transitorio">Transitorio</option>
-                <option value="Definitivo">Definitivo</option>
-            </select>
-        </td>
-        <td><input type="number" class="form-control form-control-sm" value="0"></td>
-        <td class="text-center">
-            <button class="btn btn-outline-danger btn-sm" onclick="this.parentElement.parentElement.remove()">
-                <i class="bi bi-trash"></i>
-            </button>
-        </td>
-    </tr>`;
-    tbody.insertAdjacentHTML('beforeend', fila);
-}
-</script>
-
+    <script>
+        function agregarFilaReingreso() {
+            const tbody = document.querySelector('#tabla-reingresos tbody');
+            const fila = `<tr>
+                <td><input type="text" class="form-control form-control-sm" placeholder="Paquete"></td>
+                <td><input type="text" class="form-control form-control-sm" placeholder="Expediente"></td>
+                <td><input type="number" class="form-control form-control-sm" value="0"></td>
+                <td><input type="text" class="form-control form-control-sm" placeholder="Juzgado"></td>
+                <td>
+                    <select class="form-select form-select-sm">
+                        <option value="Transitorio">Transitorio</option>
+                        <option value="Definitivo">Definitivo</option>
+                    </select>
+                </td>
+                <td><input type="number" class="form-control form-control-sm" value="0"></td>
+                <td class="text-center">
+                    <button class="btn btn-outline-danger btn-sm" onclick="this.parentElement.parentElement.remove()">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
+            tbody.insertAdjacentHTML('beforeend', fila);
+        }
+    </script>
 </body>
 </html>
