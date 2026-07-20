@@ -320,7 +320,8 @@
 
             <!-- DASHBOARD GLOBAL -->
             <section id="view-dashboard" class="view-section active">
-                <div class="row g-3 mb-4">
+                <!-- Indicadores de Inventario -->
+                <div class="row g-3 mb-3">
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card dashboard-card p-3 border-start border-primary border-4">
                             <div class="d-flex justify-content-between align-items-center">
@@ -367,26 +368,92 @@
                     </div>
                 </div>
 
-                <div class="card p-4 border-0 shadow-sm">
-                    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-clock-history me-2"></i>Últimos Lotes Consolidados Registrados</h6>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle" style="font-size: 0.9rem;">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Fecha Registro</th>
-                                    <th>Repositorio / Sede</th>
-                                    <th>Cantidad de Rangos</th>
-                                    <th class="text-center">Suma Teórica</th>
-                                    <th class="text-center">Suma Faltantes</th>
-                                    <th class="text-center">Total Físico Real</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dash-recent-table">
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">Sin registros cargados.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <!-- Nuevos Indicadores de Reingresos -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-sm-4">
+                        <div class="card dashboard-card p-3 border-start border-warning border-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Reingresos del Mes</p>
+                                    <h3 class="fw-bold m-0" id="dash-reingresos-mes">0</h3>
+                                </div>
+                                <div class="text-warning fs-3"><i class="bi bi-calendar-month"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                        <div class="card dashboard-card p-3 border-start border-dark border-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Reingresos de Hoy</p>
+                                    <h3 class="fw-bold m-0" id="dash-reingresos-hoy">0</h3>
+                                </div>
+                                <div class="text-dark fs-3"><i class="bi bi-calendar-day"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                        <div class="card dashboard-card p-3 border-start border-secondary border-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted small text-uppercase fw-bold mb-1">Total Acompañados</p>
+                                    <h3 class="fw-bold m-0" id="dash-total-acompanados">0</h3>
+                                </div>
+                                <div class="text-secondary fs-3"><i class="bi bi-layers-half"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tablas Recientes -->
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="card p-4 border-0 shadow-sm mb-3">
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-clock-history me-2"></i>Últimos Lotes Consolidados Registrados</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle" style="font-size: 0.9rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha Registro</th>
+                                            <th>Repositorio / Sede</th>
+                                            <th>Cantidad de Rangos</th>
+                                            <th class="text-center">Suma Teórica</th>
+                                            <th class="text-center">Suma Faltantes</th>
+                                            <th class="text-center">Total Físico Real</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dash-recent-table">
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">Sin registros cargados.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card p-4 border-0 shadow-sm">
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-arrow-return-left me-2"></i>Últimos 5 Reingresos Registrados</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle" style="font-size: 0.9rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Solicitante</th>
+                                            <th>Local / Repositorio</th>
+                                            <th>Entregado por</th>
+                                            <th class="text-center">Cant. Expedientes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dash-recent-reingresos-table">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-4">Sin reingresos registrados.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1240,7 +1307,25 @@ function resetFormularioReingreso() {
             } catch (error) { console.error(error); }
         }
 
-        function actualizarDashboardGlobal() {
+
+
+async function cargarHistorialReingresosParaDashboard() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "reingresos"));
+                baseDatosReingresos = [];
+                querySnapshot.forEach((doc) => baseDatosReingresos.push({ id: doc.id, ...doc.data() }));
+                baseDatosReingresos.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                actualizarDashboardGlobal();
+            } catch (error) {
+                console.error("Error al cargar reingresos para el dashboard:", error);
+            }
+        }
+
+
+
+        
+function actualizarDashboardGlobal() {
+            // --- Métricas de Inventario ---
             let sT = 0, sF = 0, sR = 0;
             baseDatosInventario.forEach(lote => { 
                 sT += Number(lote.totalTeorico) || 0; 
@@ -1252,26 +1337,69 @@ function resetFormularioReingreso() {
             document.getElementById('dash-total-faltantes').innerText = sF;
             document.getElementById('dash-total-real').innerText = sR;
 
-            // FÓRMULA CORREGIDA: Integridad real basada en lo que falta
-            // FÓRMULA CORREGIDA: Ahora con 2 decimales para precisión absoluta
             const porcentajeIntegridad = sT > 0 ? ((sR / sT) * 100).toFixed(2) : "100.00";
             document.getElementById('dash-porcentaje').innerText = porcentajeIntegridad + "%";
-
-            // Opcional: Podrías añadir un cambio de color si la integridad cae bajo cierto nivel
             const elPorcentaje = document.getElementById('dash-porcentaje');
             elPorcentaje.style.color = porcentajeIntegridad < 90 ? 'var(--sipa-primary)' : 'inherit';
 
+            // --- Métricas de Reingresos ---
+            const hoyStr = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            const mesActualStr = hoyStr.substring(0, 7); // Formato YYYY-MM
+
+            let reingresosMesCount = 0;
+            let reingresosHoyCount = 0;
+            let totalAcompanadosCount = 0;
+
+            baseDatosReingresos.forEach(reg => {
+                const fechaReg = reg.fecha || '';
+                if (fechaReg.startsWith(mesActualStr)) {
+                    reingresosMesCount++;
+                }
+                if (fechaReg === hoyStr) {
+                    reingresosHoyCount++;
+                }
+                if (reg.expedientes && Array.isArray(reg.expedientes)) {
+                    reg.expedientes.forEach(e => {
+                        totalAcompanadosCount += parseInt(e.acomp, 10) || 0;
+                    });
+                }
+            });
+
+            document.getElementById('dash-reingresos-mes').innerText = reingresosMesCount;
+            document.getElementById('dash-reingresos-hoy').innerText = reingresosHoyCount;
+            document.getElementById('dash-total-acompanados').innerText = totalAcompanadosCount;
+
+            // --- Tabla Reciente de Inventarios ---
             const recBody = document.getElementById('dash-recent-table');
             recBody.innerHTML = '';
             if(baseDatosInventario.length === 0) {
                 recBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">Sin registros consolidados.</td></tr>`;
-                return;
+            } else {
+                baseDatosInventario.slice(0, 5).forEach(l => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${l.fecha || 'N/A'}</td><td class="fw-bold text-dark">${l.repositorio || 'N/A'}</td><td class="text-center"><span class="badge bg-secondary">${(l.matrizRangos || []).length} tramos</span></td><td class="text-center">${l.totalTeorico ?? 0}</td><td class="text-center text-danger">${l.totalFaltantes ?? 0}</td><td class="text-center fw-bold text-success">${l.totalReal ?? 0}</td>`;
+                    recBody.appendChild(tr);
+                });
             }
-            baseDatosInventario.slice(0, 5).forEach(l => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${l.fecha || 'N/A'}</td><td class="fw-bold text-dark">${l.repositorio || 'N/A'}</td><td class="text-center"><span class="badge bg-secondary">${(l.matrizRangos || []).length} tramos</span></td><td class="text-center">${l.totalTeorico ?? 0}</td><td class="text-center text-danger">${l.totalFaltantes ?? 0}</td><td class="text-center fw-bold text-success">${l.totalReal ?? 0}</td>`;
-                recBody.appendChild(tr);
-            });
+
+            // --- Tabla Reciente de Reingresos (Últimos 5) ---
+            const recReingresosBody = document.getElementById('dash-recent-reingresos-table');
+            recReingresosBody.innerHTML = '';
+            if(baseDatosReingresos.length === 0) {
+                recReingresosBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Sin reingresos registrados.</td></tr>`;
+            } else {
+                baseDatosReingresos.slice(0, 5).forEach(r => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${r.fecha || 'N/A'}</td>
+                        <td>${r.solicitante || 'N/A'}</td>
+                        <td class="fw-bold text-primary">${r.local || 'N/A'}</td>
+                        <td>${r.entregado || 'N/A'}</td>
+                        <td class="text-center"><span class="badge bg-dark">${(r.expedientes || []).length} exp.</span></td>
+                    `;
+                    recReingresosBody.appendChild(tr);
+                });
+            }
         }
 
         function renderizarFiltrosConsultas(datos) {
