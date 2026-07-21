@@ -353,7 +353,7 @@
                 </a>
                 <a class="nav-link" data-view="view-consultas-reingresos" onclick="switchView('view-consultas-reingresos', 'Consultar Historial de Reingresos')"><i class="bi bi-search"></i> Consultar Reingresos</a>
                 <a class="nav-link" href="#" data-view="view-traslados" onclick="window.iniciarNuevoTraslado()"><i class="bi bi-truck"></i> Formato de Traslado</a>
-                <a class="nav-link" data-view="view-consultas-traslados" onclick="switchView('view-consultas-traslados', 'Consultar Historial de Traslados')"><i class="bi bi-search"></i> Consultar Traslados</a>
+                <a class="nav-link" href="#" data-view="view-consultas-traslados" onclick="switchView('view-consultas-traslados', 'Consultar Historial de Traslados')"><i class="bi bi-search"></i> Consultar Traslados</a>
                 <a class="nav-link" id="menu-link-microformas" href="#" onclick="switchView('view-microformas', 'Control de Producción de Microformas')" style="display: none;">
                     <i class="bi bi-file-earmark-spreadsheet-fill"></i> Control Microformas
                 </a>
@@ -396,7 +396,7 @@
                 </div>
             </div>
 
-            <!-- NUEVO MÓDULO: GENERADOR DE TARJETAS DE PAQUETES -->
+            <!-- MÓDULO: GENERADOR DE TARJETAS DE PAQUETES -->
             <section id="view-tarjetas" class="view-section">
                 <div class="card p-3 p-md-4 border-0 shadow-sm mb-4">
                     <h6 class="form-section-title"><i class="bi bi-card-checklist me-2"></i>Parámetros Generales del Bloque de Tarjetas</h6>
@@ -477,7 +477,7 @@
                 </div>
             </section>
 
-            <!-- NUEVO MÓDULO: CONSULTAR TARJETAS -->
+            <!-- MÓDULO: CONSULTAR TARJETAS -->
             <section id="view-consultas-tarjetas" class="view-section">
                 <div class="card p-3 p-md-4 border-0 shadow-sm mb-3">
                     <h6 class="form-section-title"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda de Tarjetas</h6>
@@ -1552,7 +1552,7 @@
             const btnGenerarPDF = document.querySelector('button[onclick="generarReporteReingresoPDF()"]');
             if (btnGenerarPDF) {
                 btnGenerarPDF.disabled = !puedeReingresos;
-                btnGenerarPDF.style.pointerEvents = peutReingresos ? 'auto' : 'none';
+                btnGenerarPDF.style.pointerEvents = puedeReingresos ? 'auto' : 'none';
                 btnGenerarPDF.classList.toggle('opacity-50', !puedeReingresos);
             }
 
@@ -1798,6 +1798,11 @@
                     return;
                 }
                 cargarMicroformasDesdeCloud();
+            }
+
+            if (viewId === 'view-traslados') {
+                const userTitle = auth.currentUser ? normalizarTexto(auth.currentUser.displayName || auth.currentUser.email.split('@')[0]) : '';
+                inicializarSelectsTraslados(userTitle);
             }
 
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -3966,54 +3971,55 @@
             mostrarModalPreviewPDF(blobUrl, `REPORTE_GLOBAL_${fechaHoy}.pdf`);
         };
 
-        // MOTOR DE GENERACIÓN DE TARJETAS DE PAQUETES (PDF HORIZONTAL 2x1)
+        // MOTOR DE GENERACIÓN DE TARJETAS DE PAQUETES (PDF HORIZONTAL 2x1 AJUSTADO)
         async function construirPDFTarjetas({ anioIngreso, personal, tipoArchivo, repositorio, juzgado, juez, fechaRecepcion, oficio, paquetesData }) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' }); // Horizontal (landscape)
+            const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' }); // Horizontal (landscape: 297 x 210 mm)
             
             const logoData = await obtenerLogoArchivoBase64();
 
             const dibujarTarjeta = (x, y, dataPaquete) => {
-                const w = 132; // Ancho de la tarjeta en horizontal
-                const h = 88;  // Alto de la tarjeta en horizontal
+                const w = 130; // Ancho óptimo por tarjeta
+                const h = 186; // Alto optimizado para ocupar uniformemente la página horizontal sin verse achatada
 
-                doc.setDrawColor(40, 40, 40);
+                doc.setDrawColor(30, 30, 30);
                 doc.setLineWidth(0.4);
                 doc.setFillColor(255, 255, 255);
                 doc.rect(x, y, w, h, 'FD');
 
                 if (logoData) {
-                    doc.addImage(logoData, 'PNG', x + 4, y + 2, 10, 10);
+                    doc.addImage(logoData, 'PNG', x + 5, y + 4, 12, 12);
                 }
-                doc.setFont("Inter", "bold");
-                doc.setFontSize(8.5);
-                doc.setTextColor(20, 20, 20);
-                doc.text("PODER JUDICIAL DEL PERÚ", x + w / 2, y + 4.5, { align: "center" });
                 
-                doc.setFontSize(6);
-                doc.text("CORTE SUPERIOR DE JUSTICIA DEL SANTA - ARCHIVO DESCONCENTRADO", x + w / 2, y + 8, { align: "center" });
+                doc.setFont("Inter", "bold");
+                doc.setFontSize(10);
+                doc.setTextColor(20, 20, 20);
+                doc.text("PODER JUDICIAL DEL PERÚ", x + w / 2, y + 7, { align: "center" });
+                
+                doc.setFontSize(6.5);
+                doc.text("CORTE SUPERIOR DE JUSTICIA DEL SANTA - ARCHIVO DESCONCENTRADO", x + w / 2, y + 11.5, { align: "center" });
 
                 doc.setLineWidth(0.3);
-                doc.line(x + 3, y + 10, x + w - 3, y + 10);
+                doc.line(x + 4, y + 14, x + w - 4, y + 14);
 
-                let cursorY = y + 12;
-                const altoFila = 5.2;
+                let cursorY = y + 17;
+                const altoFila = 11.5; // Espacio vertical generoso para evitar aplastamiento
 
                 const filaDato = (label, valor) => {
                     doc.setFont("Inter", "bold");
-                    doc.setFontSize(6);
-                    doc.setTextColor(80, 80, 80);
-                    doc.text(label, x + 4, cursorY + 3.5);
+                    doc.setFontSize(7);
+                    doc.setTextColor(70, 70, 70);
+                    doc.text(label, x + 5, cursorY + 4);
 
-                    doc.setDrawColor(60, 60, 60);
+                    doc.setDrawColor(80, 80, 80);
                     doc.setFillColor(248, 248, 248);
-                    doc.rect(x + 35, cursorY, w - 38, altoFila, 'FD');
+                    doc.rect(x + 40, cursorY, w - 45, altoFila, 'FD');
 
                     doc.setFont("Inter", "bold");
-                    doc.setFontSize(7.5);
+                    doc.setFontSize(8.5);
                     doc.setTextColor(10, 10, 10);
-                    doc.text(String(valor || ''), x + 35 + ((w - 38) / 2), cursorY + (altoFila / 2) + 1.2, { align: "center" });
-                    cursorY += altoFila + 1.5;
+                    doc.text(String(valor || ''), x + 40 + ((w - 45) / 2), cursorY + (altoFila / 2) + 1, { align: "center" });
+                    cursorY += altoFila + 2.5;
                 };
 
                 filaDato("TIPO DE ARCHIVO", tipoArchivo);
@@ -4022,28 +4028,28 @@
 
                 // Paquete N° (Doble caja año / número)
                 doc.setFont("Inter", "bold");
-                doc.setFontSize(6);
-                doc.setTextColor(80, 80, 80);
-                doc.text("PAQUETE N°", x + 4, cursorY + 3.5);
+                doc.setFontSize(7);
+                doc.setTextColor(70, 70, 70);
+                doc.text("PAQUETE N°", x + 5, cursorY + 4);
 
-                const halfW = (w - 38) / 2;
-                doc.setDrawColor(60, 60, 60);
+                const halfW = (w - 45) / 2;
+                doc.setDrawColor(80, 80, 80);
                 doc.setFillColor(248, 248, 248);
-                doc.rect(x + 35, cursorY, halfW, altoFila, 'FD');
-                doc.rect(x + 35 + halfW, cursorY, halfW, altoFila, 'FD');
+                doc.rect(x + 40, cursorY, halfW, altoFila, 'FD');
+                doc.rect(x + 40 + halfW, cursorY, halfW, altoFila, 'FD');
 
                 doc.setFont("Inter", "bold");
-                doc.setFontSize(8);
-                doc.text(String(anioIngreso || ''), x + 35 + (halfW / 2), cursorY + (altoFila / 2) + 1.2, { align: "center" });
-                doc.text(String(dataPaquete.nroPaq || ''), x + 35 + halfW + (halfW / 2), cursorY + (altoFila / 2) + 1.2, { align: "center" });
+                doc.setFontSize(9);
+                doc.text(String(anioIngreso || ''), x + 40 + (halfW / 2), cursorY + (altoFila / 2) + 1, { align: "center" });
+                doc.text(String(dataPaquete.nroPaq || ''), x + 40 + halfW + (halfW / 2), cursorY + (altoFila / 2) + 1, { align: "center" });
 
                 doc.setFont("Inter", "normal");
-                doc.setFontSize(4.5);
+                doc.setFontSize(5);
                 doc.setTextColor(100, 100, 100);
-                doc.text("AÑO DE INGRESO", x + 35 + (halfW / 2), cursorY + altoFila + 2, { align: "center" });
-                doc.text("NÚMERO PAQUETE", x + 35 + halfW + (halfW / 2), cursorY + altoFila + 2, { align: "center" });
+                doc.text("AÑO DE INGRESO", x + 40 + (halfW / 2), cursorY + altoFila + 2.5, { align: "center" });
+                doc.text("NÚMERO PAQUETE", x + 40 + halfW + (halfW / 2), cursorY + altoFila + 2.5, { align: "center" });
 
-                cursorY += altoFila + 3.5;
+                cursorY += altoFila + 4.5;
 
                 filaDato("CANT. EXPEDIENTES", dataPaquete.cantExp);
                 filaDato("AÑO EXPEDIENTES", dataPaquete.anioExp);
@@ -4054,13 +4060,12 @@
             };
 
             // En hoja horizontal (297 x 210 mm), colocamos 2 tarjetas lado a lado
-            // Tarjeta 1: X = 12, Y = 10
-            // Tarjeta 2: X = 153, Y = 10
+            // Margen superior 12 mm, ancho de tarjeta 130 mm (izq: 14 mm, der: 153 mm)
             for (let i = 0; i < paquetesData.length; i += 2) {
                 if (i > 0) doc.addPage();
                 
                 const yPos = 12;
-                dibujarTarjeta(12, yPos, paquetesData[i]);
+                dibujarTarjeta(14, yPos, paquetesData[i]);
 
                 if (i + 1 < paquetesData.length) {
                     dibujarTarjeta(153, yPos, paquetesData[i + 1]);
@@ -4280,7 +4285,6 @@
 
         function extraerNumeroFlexible(cadena) {
             if (!cadena) return null;
-            // Extrae el último bloque numérico encontrado en la cadena (ej: de "E26-74" saca 74, de "16777R" saca 16777, de "22-354" saca 354)
             const matches = cadena.match(/\d+/g);
             if (!matches || matches.length === 0) return null;
             return parseInt(matches[matches.length - 1], 10);
